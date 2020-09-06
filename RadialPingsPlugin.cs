@@ -5,9 +5,7 @@ using BepInEx.Configuration;
 using R2API;
 using System.Reflection;
 using Path = System.IO.Path;
-using RoR2.UI;
 using RoR2;
-using TMPro;
 using System.IO;
 
 namespace ThinkInvisible.RadialPings {
@@ -23,7 +21,6 @@ namespace ThinkInvisible.RadialPings {
 
         internal static ConfigFile cfgFile;
 
-        internal static GameObject genericRadialMenuPrefab;
 
         //todo: configify this
         internal float mainMenuOpenDelay = 0.2f;
@@ -48,44 +45,7 @@ namespace ThinkInvisible.RadialPings {
                 LanguageAPI.Add(reader.ReadToEnd());
             }
 
-            ProceduralRadialMenu.buttonPrefab = Resources.Load<GameObject>("@RadialPings:Assets/RadialPings/ProceduralRadialButton.prefab");
-            genericRadialMenuPrefab = Resources.Load<GameObject>("@RadialPings:Assets/RadialPings/ProceduralRadialMenu.prefab");
-            
-            genericRadialMenuPrefab.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
-
-            var menuCtrl = genericRadialMenuPrefab.GetComponent<ProceduralRadialMenu>();
-            menuCtrl.inOutAnimSpeed = 0.2f;
-            menuCtrl.extraOutroScale = 1.25f;
-            
-            var tmpfont = Resources.Load<TMP_FontAsset>("tmpfonts/misc/tmpsquaresboldhud");
-            var tmpmtl = Resources.Load<Material>("tmpfonts/misc/tmpsquaresboldhud");
-
-			var newText = genericRadialMenuPrefab.transform.Find("DisplayContainer").Find("Caption").gameObject.AddComponent<TextMeshPro>();
-            newText.alignment = TextAlignmentOptions.Center;
-            newText.enableAutoSizing = true;
-            newText.fontSizeMin = 120;
-            newText.fontSizeMax = 960;
-            _ = newText.renderer;
-            newText.font = tmpfont;
-            newText.material = tmpmtl;
-           newText.color = Color.white;
-            newText.text = "";
-            newText.ComputeMarginSize();
-
-			var newSubText = genericRadialMenuPrefab.transform.Find("DisplayContainer").Find("ContextCaption").gameObject.AddComponent<TextMeshPro>();
-            newSubText.alignment = TextAlignmentOptions.Center;
-            newSubText.enableAutoSizing = true;
-            newSubText.fontSizeMin = 60;
-            newSubText.fontSizeMax = 480;
-            _ = newSubText.renderer;
-            newSubText.font = tmpfont;
-            newSubText.material = tmpmtl;
-            newSubText.color = Color.white;
-            newSubText.text = "";
-            newSubText.ComputeMarginSize();
-
-            genericRadialMenuPrefab.AddComponent<MPEventSystemLocator>();
-            genericRadialMenuPrefab.AddComponent<CursorOpener>();
+            RadialMenu.Setup();
 
             new MainPingMenuBindings();
             new PlayersMenuBindings();
@@ -97,7 +57,7 @@ namespace ThinkInvisible.RadialPings {
         }
 
         void Start() {
-            CustomPingCatalog.Init();
+            PingCatalog.Init();
         }
 
         private void On_PlayerCharacterMasterController_CheckPinging(On.RoR2.PlayerCharacterMasterController.orig_CheckPinging orig, PlayerCharacterMasterController self) {

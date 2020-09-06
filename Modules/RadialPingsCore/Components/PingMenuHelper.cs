@@ -6,39 +6,6 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 namespace ThinkInvisible.RadialPings {
-    public class PingBindingInfo : RadialMenuBindings.BindingInfo {
-        public CustomPingCatalog.CustomPingType[] orderedTypes = new CustomPingCatalog.CustomPingType[0];
-
-        public PingBindingInfo() {
-            onActivate = PingOnActivate;
-            contextStringProvider = PingContext;
-        }
-
-        public virtual void PingOnActivate(ProceduralRadialMenu sender, bool isHover) {
-            var pingHelper = sender.GetComponent<PingMenuHelper>();
-            pingHelper.AuthorityPerformCustomPing(null, orderedTypes);
-        }
-
-        public virtual string PingContext(ProceduralRadialMenu sender) {
-            var pingHelper = sender.GetComponent<PingMenuHelper>();
-            return pingHelper.GetFormattedContext(null, orderedTypes);
-        }
-    }
-
-    public class DirectedPingBindingInfo : PingBindingInfo {
-        public PlayerCharacterMasterController targetPCMC;
-
-        public override void PingOnActivate(ProceduralRadialMenu sender, bool isHover) {
-            var pingHelper = sender.GetComponent<PingMenuHelper>();
-            pingHelper.AuthorityPerformCustomPing(new[] {targetPCMC.gameObject}, orderedTypes);
-        }
-        
-        public override string PingContext(ProceduralRadialMenu sender) {
-            var pingHelper = sender.GetComponent<PingMenuHelper>();
-            return pingHelper.GetFormattedContext(new[] {targetPCMC.gameObject}, orderedTypes);
-        }
-    }
-
     public class PingMenuHelper : MonoBehaviour {
         public const float UPDATE_RATE = 0.25f;
         public PlayerCharacterMasterController owner;
@@ -191,19 +158,19 @@ namespace ThinkInvisible.RadialPings {
             psmain.startColor = pingColor;
         }
 
-        public void AuthorityPerformCustomPing(GameObject[] extraTargets, params CustomPingCatalog.CustomPingType[] orderedPingTypesToTry) {
+        public void AuthorityPerformCustomPing(GameObject[] extraTargets, params PingCatalog.PingType[] orderedPingTypesToTry) {
             if(!TryUpdatePingInfo()) return;
             
             var ownerText = Util.GetBestMasterName(owner.master);
             
             List<string> args = new List<string> {ownerText};
 
-            CustomPingCatalog.CustomPingType selectedType = null;
+            PingCatalog.PingType selectedType = null;
 
             var allTargets = new List<GameObject>{lastPingInfo.targetGameObject};
             if(extraTargets != null) allTargets.AddRange(extraTargets);
 
-            var pingData = new CustomPingCatalog.CustomPingData {
+            var pingData = new PingCatalog.PingData {
                 origin = lastPingInfo.origin,
                 normal = lastPingInfo.normal,
                 targets = allTargets,
@@ -224,14 +191,14 @@ namespace ThinkInvisible.RadialPings {
                 new MsgCustomPing(selectedType, pingData).Send(R2API.Networking.NetworkDestination.Clients);
         }
 
-        public string GetFormattedContext(GameObject[] extraTargets, params CustomPingCatalog.CustomPingType[] pingTypes) {
-            CustomPingCatalog.CustomPingType selectedType = null;
+        public string GetFormattedContext(GameObject[] extraTargets, params PingCatalog.PingType[] pingTypes) {
+            PingCatalog.PingType selectedType = null;
 
             var allTargets = new List<GameObject>{lastPingInfo.targetGameObject};
             if(extraTargets != null) allTargets.AddRange(extraTargets);
             
             List<string> args = new List<string>();
-            var pingData = new CustomPingCatalog.CustomPingData {
+            var pingData = new PingCatalog.PingData {
                 origin = lastPingInfo.origin,
                 normal = lastPingInfo.normal,
                 targets = allTargets,
@@ -250,7 +217,7 @@ namespace ThinkInvisible.RadialPings {
             return string.Format(Language.GetString(selectedType.previewToken), args.ToArray());
         }
 
-        private static void PerformCustomPing(CustomPingCatalog.CustomPingType pingType, CustomPingCatalog.CustomPingData pingData) {
+        private static void PerformCustomPing(PingCatalog.PingType pingType, PingCatalog.PingData pingData) {
             if(!pingData.owner) {
                 RadialPingsPlugin.logger.LogError("Received PerformCustomPing for nonexistent owner");
                 return;
@@ -279,8 +246,8 @@ namespace ThinkInvisible.RadialPings {
         }
 
         public struct MsgCustomPing : INetMessage {
-            public CustomPingCatalog.CustomPingType _pingType;
-            public CustomPingCatalog.CustomPingData _pingData;
+            public PingCatalog.PingType _pingType;
+            public PingCatalog.PingData _pingData;
             
             public void Serialize(NetworkWriter writer) {
                 writer.Write(_pingType.catalogIndex);
@@ -288,15 +255,15 @@ namespace ThinkInvisible.RadialPings {
             }
 
             public void Deserialize(NetworkReader reader) {
-                _pingType = CustomPingCatalog.Get(reader.ReadInt32());
-                _pingData = reader.Read<CustomPingCatalog.CustomPingData>();
+                _pingType = PingCatalog.Get(reader.ReadInt32());
+                _pingData = reader.Read<PingCatalog.PingData>();
             }
 
             public void OnReceived() {
                 PerformCustomPing(_pingType, _pingData);
             }
 
-            public MsgCustomPing(CustomPingCatalog.CustomPingType pingType, CustomPingCatalog.CustomPingData pingData) {
+            public MsgCustomPing(PingCatalog.PingType pingType, PingCatalog.PingData pingData) {
                 _pingType = pingType;
                 _pingData = pingData;
             }

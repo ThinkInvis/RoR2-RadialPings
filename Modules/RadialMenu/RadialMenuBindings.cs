@@ -43,7 +43,7 @@ namespace ThinkInvisible.RadialPings {
 
         internal protected virtual GameObject Instantiate(PlayerCharacterMasterController owner) {
             var targetHUD = HUD.readOnlyInstanceList.First(x => x.targetMaster == owner.master);
-            var menuObj = GameObject.Instantiate(RadialPingsPlugin.genericRadialMenuPrefab, targetHUD.transform.Find("MainContainer").Find("MainUIArea"));
+            var menuObj = GameObject.Instantiate(RadialMenu.genericRadialMenuPrefab, targetHUD.transform.Find("MainContainer").Find("MainUIArea"));
 
             var menuCtrl = menuObj.GetComponent<ProceduralRadialMenu>();
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ThinkInvisible.RadialPings {
     public static class MiscUtil {
-        public static int ModifyTargetSelf(ref CustomPingCatalog.CustomPingData pingData) {
+        public static int ModifyTargetSelf(ref PingCatalog.PingData pingData) {
             pingData.targets[0] = pingData.owner?.GetComponent<PlayerCharacterMasterController>()?.master?.GetBodyObject();
             return 0;
         }
@@ -36,11 +36,11 @@ namespace ThinkInvisible.RadialPings {
             return true;
         }
 
-        public static int CheckTarget2PRecipient(ref CustomPingCatalog.CustomPingData pingData) {
+        public static int CheckTarget2PRecipient(ref PingCatalog.PingData pingData) {
             return pingData.targets[1].GetComponent<PlayerCharacterMasterController>().hasEffectiveAuthority ? 1 : 0;
         }
 
-        public static int ModifyTarget2PRecipient(ref CustomPingCatalog.CustomPingData pingData) {
+        public static int ModifyTarget2PRecipient(ref PingCatalog.PingData pingData) {
             var pcmc = pingData.targets[1].GetComponent<PlayerCharacterMasterController>();
             if(pcmc && pcmc.hasEffectiveAuthority) {
                 pingData.targets[0] = pcmc.body?.gameObject;

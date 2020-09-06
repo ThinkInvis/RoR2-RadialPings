@@ -2,12 +2,12 @@
 using RoR2.UI;
 using System.Linq;
 using UnityEngine;
-using static ThinkInvisible.RadialPings.CustomPingCatalog;
+using static ThinkInvisible.RadialPings.PingCatalog;
 
 namespace ThinkInvisible.RadialPings {
     internal class MainPingMenuBindings : RadialMenuBindings<MainPingMenuBindings> {
         internal MainPingMenuBindings() {
-            var LookHerePingTypeTarget = new CustomPingType("RADIALPINGS_CONTEXT_MAIN_LOOK_TARGET",
+            var LookHerePingTypeTarget = new PingType("RADIALPINGS_CONTEXT_MAIN_LOOK_TARGET",
                 (pingData, tokens) => {
                     if(pingData.targets[0] == null) return false;
                     string token = null;
@@ -16,15 +16,15 @@ namespace ThinkInvisible.RadialPings {
                     tokens.Add(token);
                     return true;
                 });
-            LookHerePingTypeTarget.pingSkins.Add(new CustomPingSkin(Color.white, Resources.Load<Sprite>("@RadialPings:Assets/RadialPings/RadialPingsLookIcon.png"), 8f,
+            LookHerePingTypeTarget.pingSkins.Add(new PingSkin(Color.white, Resources.Load<Sprite>("@RadialPings:Assets/RadialPings/RadialPingsLookIcon.png"), 8f,
                 "RADIALPINGS_MESSAGE_MAIN_LOOK_TARGET", PingIndicator.PingType.Default));
             
-            var LookHerePingTypeNoTarget = new CustomPingType(null,
+            var LookHerePingTypeNoTarget = new PingType(null,
                 (pingData, tokens) => {return true;});
-            LookHerePingTypeNoTarget.pingSkins.Add(new CustomPingSkin(Color.white, Resources.Load<Sprite>("@RadialPings:Assets/RadialPings/RadialPingsLookIcon.png"), 8f,
+            LookHerePingTypeNoTarget.pingSkins.Add(new PingSkin(Color.white, Resources.Load<Sprite>("@RadialPings:Assets/RadialPings/RadialPingsLookIcon.png"), 8f,
                 "RADIALPINGS_MESSAGE_MAIN_LOOK_NOTARGET", PingIndicator.PingType.Default));
 
-            var AggressivePingTypeEnemy = new CustomPingType("RADIALPINGS_CONTEXT_MAIN_AGGRESSIVE_ENEMY",
+            var AggressivePingTypeEnemy = new PingType("RADIALPINGS_CONTEXT_MAIN_AGGRESSIVE_ENEMY",
                 (pingData, tokens) => {
                     if(pingData.targets[0] == null || !pingData.targets[0].GetComponent<CharacterBody>()) return false;
                     string token = null;
@@ -32,20 +32,20 @@ namespace ThinkInvisible.RadialPings {
                     tokens.Add(token);
                     return true;
                 });
-            AggressivePingTypeEnemy.pingSkins.Add(new CustomPingSkin(new Color(1f, 0.5f, 0f), Resources.Load<Sprite>("textures/miscicons/texAttackIcon"), 15f,
+            AggressivePingTypeEnemy.pingSkins.Add(new PingSkin(new Color(1f, 0.5f, 0f), Resources.Load<Sprite>("textures/miscicons/texAttackIcon"), 15f,
                 "RADIALPINGS_MESSAGE_MAIN_AGGRESSIVE_ENEMY", PingIndicator.PingType.Enemy,
                 Highlight.HighlightColor.teleporter, 1f));
 
-            var AggressivePingTypeTeleporter = new CustomPingType("RADIALPINGS_CONTEXT_MAIN_AGGRESSIVE_TELEPORTER",
+            var AggressivePingTypeTeleporter = new PingType("RADIALPINGS_CONTEXT_MAIN_AGGRESSIVE_TELEPORTER",
                 (pingData, tokens) => {
                     if(pingData.targets[0] == null || !pingData.targets[0].GetComponent<TeleporterInteraction>()) return false;
                     return true;
                 });
-            AggressivePingTypeTeleporter.pingSkins.Add(new CustomPingSkin(new Color(1f, 0.5f, 0f), Resources.Load<Sprite>("textures/miscicons/texTeleporterIconOutlined"), 15f,
+            AggressivePingTypeTeleporter.pingSkins.Add(new PingSkin(new Color(1f, 0.5f, 0f), Resources.Load<Sprite>("textures/miscicons/texTeleporterIconOutlined"), 15f,
                 "RADIALPINGS_MESSAGE_MAIN_AGGRESSIVE_TELEPORTER", PingIndicator.PingType.Interactable,
                 Highlight.HighlightColor.teleporter, 1f));
 
-            var AggressivePingTypeInteractable = new CustomPingType("RADIALPINGS_CONTEXT_MAIN_AGGRESSIVE_INTERACTABLE",
+            var AggressivePingTypeInteractable = new PingType("RADIALPINGS_CONTEXT_MAIN_AGGRESSIVE_INTERACTABLE",
                 (pingData, tokens) => {
                     var targetObj = pingData.targets[0];
                     if(targetObj == null) return false;
@@ -59,40 +59,40 @@ namespace ThinkInvisible.RadialPings {
                     tokens.Add(token);
                     return true;
                 });
-            AggressivePingTypeInteractable.pingSkins.Add(new CustomPingSkin(new Color(1f, 0.5f, 0f), Resources.Load<Sprite>("@RadialPings:Assets/RadialPings/RadialPingsNoLootIcon.png"), 30f,
+            AggressivePingTypeInteractable.pingSkins.Add(new PingSkin(new Color(1f, 0.5f, 0f), Resources.Load<Sprite>("@RadialPings:Assets/RadialPings/RadialPingsNoLootIcon.png"), 30f,
                 "RADIALPINGS_MESSAGE_MAIN_AGGRESSIVE_INTERACTABLE", PingIndicator.PingType.Interactable,
                 Highlight.HighlightColor.interactive, 1f));
 
-            var AggressivePingTypeNoTarget = new CustomPingType("RADIALPINGS_CONTEXT_MAIN_AGGRESSIVE_NOTARGET",
+            var AggressivePingTypeNoTarget = new PingType("RADIALPINGS_CONTEXT_MAIN_AGGRESSIVE_NOTARGET",
                 (targetObj, tokens) => {
                     return true;
                 }, MiscUtil.ModifyTargetSelf);
-            AggressivePingTypeNoTarget.pingSkins.Add(new CustomPingSkin(new Color(1f, 0.5f, 0f), Resources.Load<Sprite>("textures/miscicons/texSprintIcon"), 8f,
+            AggressivePingTypeNoTarget.pingSkins.Add(new PingSkin(new Color(1f, 0.5f, 0f), Resources.Load<Sprite>("textures/miscicons/texSprintIcon"), 8f,
                 "RADIALPINGS_MESSAGE_MAIN_AGGRESSIVE_NOTARGET", PingIndicator.PingType.Default));
 
-            var RespondNoPingType = new CustomPingType(null,
+            var RespondNoPingType = new PingType(null,
                 (targetObj, tokens) => {
                     return true;
                 }, MiscUtil.ModifyTargetSelf);
-            RespondNoPingType.pingSkins.Add(new CustomPingSkin(new Color(1f, 0.5f, 0.5f), Resources.Load<Sprite>("@RadialPings:Assets/RadialPings/RadialPingsXIcon.png"), 8f,
+            RespondNoPingType.pingSkins.Add(new PingSkin(new Color(1f, 0.5f, 0.5f), Resources.Load<Sprite>("@RadialPings:Assets/RadialPings/RadialPingsXIcon.png"), 8f,
                 "RADIALPINGS_MESSAGE_MAIN_NO", PingIndicator.PingType.Default));
             
-            var RespondHelpPingType = new CustomPingType(null,
+            var RespondHelpPingType = new PingType(null,
                 (targetObj, tokens) => {
                     return true;
                 }, MiscUtil.ModifyTargetSelf);
-            RespondHelpPingType.pingSkins.Add(new CustomPingSkin(Color.red, Resources.Load<Sprite>("textures/miscicons/texCriticallyHurtIcon"), 15f,
+            RespondHelpPingType.pingSkins.Add(new PingSkin(Color.red, Resources.Load<Sprite>("textures/miscicons/texCriticallyHurtIcon"), 15f,
                 "RADIALPINGS_MESSAGE_MAIN_HELP", PingIndicator.PingType.Default,
                 Highlight.HighlightColor.teleporter, 2f));
             
-            var RespondYesPingType = new CustomPingType(null,
+            var RespondYesPingType = new PingType(null,
                 (targetObj, tokens) => {
                     return true;
                 }, MiscUtil.ModifyTargetSelf);
-            RespondYesPingType.pingSkins.Add(new CustomPingSkin(new Color(0.5f, 1f, 0.5f), Resources.Load<Sprite>("@RadialPings:Assets/RadialPings/RadialPingsOIcon.png"), 8f,
+            RespondYesPingType.pingSkins.Add(new PingSkin(new Color(0.5f, 1f, 0.5f), Resources.Load<Sprite>("@RadialPings:Assets/RadialPings/RadialPingsOIcon.png"), 8f,
                 "RADIALPINGS_MESSAGE_MAIN_YES", PingIndicator.PingType.Default));
 
-            CustomPingCatalog.getAdditionalEntries += (list) => {
+            PingCatalog.getAdditionalEntries += (list) => {
                 list.Add(LookHerePingTypeTarget);
                 list.Add(LookHerePingTypeNoTarget);
                 list.Add(AggressivePingTypeEnemy);
