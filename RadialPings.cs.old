@@ -1,0 +1,427 @@
+﻿using BepInEx;
+using R2API.Utils;
+using UnityEngine;
+using BepInEx.Configuration;
+using R2API;
+using System.Reflection;
+using Path = System.IO.Path;
+using MonoMod.Cil;
+using System.Linq;
+using RoR2.UI;
+using RoR2;
+using TMPro;
+using System.Collections.Generic;
+
+namespace ThinkInvisible.RadialPings {
+    [BepInDependency("com.bepis.r2api", "2.5.11")]
+    [BepInPlugin(ModGuid, ModName, ModVer)]
+    [R2APISubmoduleDependency(nameof(ResourcesAPI), nameof(R2API.Networking.NetworkingAPI))]
+    public class RadialPingsPlugin:BaseUnityPlugin {
+        public const string ModVer = "1.0.0";
+        public const string ModName = "RadialPings";
+        public const string ModGuid = "com.ThinkInvisible.RadialPings";
+        
+        internal static BepInEx.Logging.ManualLogSource logger;
+
+        internal static ConfigFile cfgFile;
+
+        public GameObject mainRadialMenuPrefab;
+
+        internal static GameObject latestPingMenuObj;
+
+        public void Awake() {
+            logger = Logger;
+            cfgFile = new ConfigFile(Path.Combine(Paths.ConfigPath, ModGuid + ".cfg"), true);
+
+            //todo: option to keep first ping preview as result
+
+            using(var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("RadialPings.radialpings_assets")) {
+                var bundle = AssetBundle.LoadFromStream(stream);
+                var provider = new AssetBundleResourcesProvider("@RadialPings", bundle);
+                ResourcesAPI.AddProvider(provider);
+            }
+
+            mainRadialMenuPrefab = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("@RadialPings:Assets/RadialPings/OctoRadialMenu.prefab"), "RadialPingsMainMenu", false);
+            
+            var tmpfont = Resources.Load<TMP_FontAsset>("tmpfonts/misc/tmpsquaresboldhud");
+            var tmpmtl = Resources.Load<Material>("tmpfonts/misc/tmpsquaresboldhud");
+
+			var newText = mainRadialMenuPrefab.transform.Find("Caption").gameObject.AddComponent<TextMeshPro>();
+            newText.alignment = TextAlignmentOptions.Center;
+            newText.enableAutoSizing = true;
+            newText.fontSizeMin = 120;
+            newText.fontSizeMax = 480;
+            _ = newText.renderer;
+            newText.font = tmpfont;
+            newText.material = tmpmtl;
+           newText.color = Color.white;
+            newText.text = "";
+            newText.ComputeMarginSize();
+
+			var newSubText = mainRadialMenuPrefab.transform.Find("Subcaption").gameObject.AddComponent<TextMeshPro>();
+            newSubText.alignment = TextAlignmentOptions.Center;
+            newSubText.enableAutoSizing = true;
+            newSubText.fontSizeMin = 60;
+            newSubText.fontSizeMax = 240;
+            _ = newSubText.renderer;
+            newSubText.font = tmpfont;
+            newSubText.material = tmpmtl;
+            newSubText.color = Color.white;
+            newSubText.text = "";
+            newSubText.ComputeMarginSize();
+
+            var mpESL = mainRadialMenuPrefab.AddComponent<MPEventSystemLocator>();
+            var cursOp = mainRadialMenuPrefab.AddComponent<CursorOpener>();
+
+            var menuCtrl = mainRadialMenuPrefab.GetComponent<OctoRadialMenuController>();
+            menuCtrl.SetupReferences();
+            menuCtrl.captionTokens = new string[]{"RADIALPINGS_MAIN1_NAME","RADIALPINGS_MAIN2_NAME","RADIALPINGS_MAIN3_NAME","RADIALPINGS_MAIN4_NAME","RADIALPINGS_MAIN5_NAME","RADIALPINGS_MAIN6_NAME","RADIALPINGS_MAIN7_NAME","RADIALPINGS_MAIN8_NAME"};
+ 
+            LanguageAPI.Add("RADIALPINGS_MAIN1_NAME", "NYI"); //Drone Commands
+            menuCtrl.AssignIconSprite(0,Resources.Load<Sprite>("textures/miscicons/texWIPIcon"));
+
+            //LanguageAPI.Add("RADIALPINGS_MAIN2_NAME", "Look at This");
+            LanguageAPI.Add("RADIALPINGS_MAIN2_NAME", "NYI");
+            LanguageAPI.Add("RADIALPINGS_LOOK_NOTARGET", "<style=cIsUtility>{0} found something interesting...</style>");
+            LanguageAPI.Add("RADIALPINGS_LOOK_TARGET", "<style=cIsUtility>{0} found something interesting: {1}</style>");
+            LanguageAPI.Add("RADIALPINGS_LOOK_CTXTARGET", "<style=cIsUtility>{0}</style>");
+            menuCtrl.AssignIconSprite(1,Resources.Load<Sprite>("textures/miscicons/texMysteryIcon"));
+
+            LanguageAPI.Add("RADIALPINGS_MAIN3_NAME", "Let's GO!");
+            LanguageAPI.Add("RADIALPINGS_AGGRESSIVE_NOTARGET", "<style=cIsHealth>{0} wants to hurry up!</style>");
+            LanguageAPI.Add("RADIALPINGS_AGGRESSIVE_ENEMY", "<style=cIsHealth>{0} wants to attack: {1}!</style>");
+            LanguageAPI.Add("RADIALPINGS_AGGRESSIVE_INTERACTABLE", "<style=cIsHealth>{0} claims: {1}!</style>");
+            LanguageAPI.Add("RADIALPINGS_AGGRESSIVE_TELEPORTER", "<style=cIsHealth>{0} is ready to start the <style=cDeath>Teleporter <sprite name=\"TP\" tint=1></style>!</style>");
+            LanguageAPI.Add("RADIALPINGS_AGGRESSIVE_CTXNOTARGET", "<style=cIsHealth>Hurry Up!</style>");
+            LanguageAPI.Add("RADIALPINGS_AGGRESSIVE_CTXENEMY", "<style=cIsHealth>Attack {0}!</style>");
+            LanguageAPI.Add("RADIALPINGS_AGGRESSIVE_CTXINTERACTABLE", "<style=cIsHealth>I Want {0}!</style>");
+            LanguageAPI.Add("RADIALPINGS_AGGRESSIVE_CTXTELEPORTER", "<style=cIsHealth>Start <sprite name=\"TP\" tint=1></style>!");
+            menuCtrl.AssignIconSprite(2,Resources.Load<Sprite>("textures/miscicons/texAttackIcon"), new Color(1f, 0.5f, 0f));
+
+            LanguageAPI.Add("RADIALPINGS_MAIN4_NAME", "Move Here");
+            //LanguageAPI.Add("RADIALPINGS_MOVE_NOTARGET", "<style=cIsHealing>{0} wants to move here.</style>");
+            menuCtrl.AssignIconSprite(3,Resources.Load<Sprite>("textures/miscicons/texSprintIcon"), Color.green);
+
+            LanguageAPI.Add("RADIALPINGS_MAIN5_NAME", "NYI"); //Ping Player
+            LanguageAPI.Add("RADIALPINGS_PINGPLAYER_NOTARGET", "{0} pokes {1}.");
+            LanguageAPI.Add("RADIALPINGS_PINGPLAYER_ITEM", "<style=cIsDamage>{0} wants {1} to take {2}.</style>");
+            LanguageAPI.Add("RADIALPINGS_PINGPLAYER_INTERACTABLE", "<style=cIsDamage>{0} wants {1} to activate {2}.</style>");
+            LanguageAPI.Add("RADIALPINGS_PINGPLAYER_TELEPORTER", "<style=cIsHealth>{0} wants {1} to get to the <style=cDeath>Teleporter <sprite name=\"TP\" tint=1></style>!</style>");
+            LanguageAPI.Add("RADIALPINGS_PINGPLAYER_RECIPIENT", "<style=cIsHealing>{0} wants to group up with {1}.</style>");
+            LanguageAPI.Add("RADIALPINGS_PINGPLAYER_ENEMY", "<style=cIsHealth>{0} wants {1} to focus on attacking {2}.</style>");
+            LanguageAPI.Add("RADIALPINGS_PINGPLAYER_CTXNOTARGET", "{0}: Poke");
+            LanguageAPI.Add("RADIALPINGS_PINGPLAYER_CTXITEM", "<style=cIsDamage>{0}: Take {1}</style>");
+            LanguageAPI.Add("RADIALPINGS_PINGPLAYER_CTXINTERACTABLE", "<style=cIsDamage>{0}: Use {1}</style>");
+            LanguageAPI.Add("RADIALPINGS_PINGPLAYER_CTXTELEPORTER", "<style=cIsHealth>{0}: Move To <sprite name=\"TP\" tint=1>!</style>");
+            LanguageAPI.Add("RADIALPINGS_PINGPLAYER_CTXRECIPIENT", "<style=cIsHealing>{0}: Group Up</style>");
+            LanguageAPI.Add("RADIALPINGS_PINGPLAYER_CTXENEMY", "<style=cIsHealth>{0}: Attack {1}</style>");
+            menuCtrl.AssignIconSprite(4,Resources.Load<Sprite>("textures/miscicons/texWIPIcon"));
+
+            LanguageAPI.Add("RADIALPINGS_MAIN6_NAME", "No");
+            LanguageAPI.Add("RADIALPINGS_RESPONDNO_NOTARGET", "<style=cIsDamage>{0} says</style> <style=cDeath>no</style>.");
+            menuCtrl.AssignIconSprite(5,Resources.Load<Sprite>("textures/miscicons/texOptionsArrowLeft"), new Color(1f, 0.25f, 0.25f));
+
+            LanguageAPI.Add("RADIALPINGS_MAIN7_NAME", "Help Me!");
+            LanguageAPI.Add("RADIALPINGS_HELP_NOTARGET", "<style=cDeath>{0} is calling for HELP!</style>");
+            menuCtrl.AssignIconSprite(6,Resources.Load<Sprite>("textures/miscicons/texCriticallyHurtIcon"), Color.red);
+
+            LanguageAPI.Add("RADIALPINGS_MAIN8_NAME", "Yes");
+            LanguageAPI.Add("RADIALPINGS_RESPONDYES_NOTARGET", "<style=cIsDamage>{0} says</style> <style=cIsHealing>yes</style>.");
+            menuCtrl.AssignIconSprite(7,Resources.Load<Sprite>("textures/miscicons/texOptionsArrowRight"), new Color(0.25f, 1f, 0.25f));
+
+            On.RoR2.PlayerCharacterMasterController.CheckPinging += On_PlayerCharacterMasterController_CheckPinging;
+
+            
+            LanguageAPI.Add("RADIALPINGS_QUICK", "Quick Ping");
+            LanguageAPI.Add("RADIALPINGS_CANCEL", "Cancel");
+        }
+
+        #region Utils
+        //todo: highlight
+        private void ExplicitBuildPing(PingerController self, GameObject targetObject, Vector3 origin, Vector3 targetNormal, string ownerText, string chatText, Color color, Sprite sprite, float duration) {
+			if(!self.pingIndicator) {
+				var newPingInd = (GameObject)UnityEngine.Object.Instantiate(Resources.Load("Prefabs/PingIndicator"));
+				self.pingIndicator = newPingInd.GetComponent<PingIndicator>();
+				self.pingIndicator.pingOwner = self.gameObject;
+			}
+            PingIndicator pingInd = self.pingIndicator;
+
+            pingInd.pingOrigin = origin;
+            
+            if(targetObject) {
+                var targetBody = targetObject.GetComponent<CharacterBody>();
+                if(targetBody) pingInd.targetTransformToFollow = targetBody.coreTransform;
+                pingInd.transform.position = targetObject.transform.position;
+                pingInd.positionIndicator.targetTransform = targetObject.transform;
+            } else {
+                pingInd.transform.position = origin;
+            }
+            pingInd.transform.rotation = Util.QuaternionSafeLookRotation(targetNormal);
+            pingInd.transform.localScale = Vector3.one;
+            pingInd.positionIndicator.defaultPosition = pingInd.transform.position;
+            pingInd.pingType = PingIndicator.PingType.Default;
+            pingInd.pingObjectScaleCurve.enabled = false;
+            pingInd.pingObjectScaleCurve.enabled = true;
+            foreach(var obj in pingInd.enemyPingGameObjects)
+                obj.SetActive(false);
+            foreach(var obj in pingInd.defaultPingGameObjects)
+                obj.SetActive(false);
+            foreach(var obj in pingInd.interactablePingGameObjects)
+                obj.SetActive(true);
+            pingInd.pingText.enabled = true;
+            pingInd.pingText.text = ownerText;
+            pingInd.pingColor = color;
+            pingInd.pingDuration = duration;
+            pingInd.pingHighlight.isOn = false;
+            pingInd.pingText.color = pingInd.textBaseColor * color;
+            pingInd.fixedTimer = duration;
+			pingInd.interactablePingGameObjects[0].GetComponent<SpriteRenderer>().sprite = sprite;
+
+			Chat.AddMessage(chatText);
+        }
+
+        private bool TryDeductPingStock(PingerController pcl) {
+            if(RoR2Application.isInSinglePlayer) return true;
+            if(pcl.pingStock > 0) {
+                pcl.pingStock --;
+                return true;
+            }
+            Chat.AddMessage(Language.GetString("PLAYER_PING_COOLDOWN"));
+            return false;
+        }
+        #endregion
+
+        #region Custom Ping Behaviors
+        private void CustomPingMoveOnly(Ray aimRay, PlayerCharacterMasterController sender) {
+            float rayDist;
+			aimRay = CameraRigController.ModifyAimRayIfApplicable(aimRay, sender.body.gameObject, out rayDist);
+			float maxDist = rayDist + 1000f;
+			RaycastHit raycastHit;
+			if(!Util.CharacterRaycast(sender.body.gameObject, aimRay, out raycastHit, maxDist, LayerIndex.entityPrecise.mask | LayerIndex.world.mask | LayerIndex.defaultLayer.mask, QueryTriggerInteraction.Collide))
+                return;
+            if(!TryDeductPingStock(sender.pingerController))
+                return;
+            sender.pingerController.SetCurrentPing(new PingerController.PingInfo {
+                active = true,
+                origin = raycastHit.point,
+                normal = raycastHit.normal,
+                targetNetworkIdentity = null
+            });;
+        }
+
+        /*private void CustomPingLook(Ray aimRay, PlayerCharacterMasterController sender) {
+            PingerController.PingInfo origPingInfo;
+            PingerController.GeneratePingInfo(aimRay, sender.body.gameObject, out origPingInfo);
+            
+            var ownerText = Util.GetBestMasterName(sender.master);
+            var sprite = Resources.Load<Sprite>("textures/miscicons/texSprintIcon");
+            var targetObj = origPingInfo.targetGameObject;
+            
+            List<string> args = new List<string> {ownerText};
+            string token = "RADIALPINGS_AGGRESSIVE_NOTARGET";
+
+            if(targetObj) {
+                var dnProv = targetObj.GetComponentInParent<IDisplayNameProvider>();
+                if(dnProv != null) args.Add(Util.GetBestBodyName(((MonoBehaviour)dnProv).gameObject));
+                else args.Add(targetObj.name);
+                if(targetObj.GetComponent<CharacterBody>()) {
+                    token = "RADIALPINGS_AGGRESSIVE_ENEMY";
+                    sprite = Resources.Load<Sprite>("textures/miscicons/texAttackIcon");
+                } //todo: team-sensitive, maybe an assist option?
+                else if(targetObj.GetComponent<TeleporterInteraction>()) {
+                    token = "RADIALPINGS_AGGRESSIVE_TELEPORTER";
+                    sprite = Resources.Load<Sprite>("textures/miscicons/texTeleporterIconOutlined");
+                }
+                else if(targetObj.GetComponent<GenericPickupController>() || targetObj.GetComponent<PurchaseInteraction>()) {
+                    token = "RADIALPINGS_AGGRESSIVE_INTERACTABLE";
+                    sprite = Resources.Load<Sprite>("textures/miscicons/texLootIconOutlined");
+                } else {
+                    targetObj = sender.body.gameObject;
+                }
+            } else return;
+
+            if(!TryDeductPingStock(sender.pingerController))
+                return;
+
+            string chatText = string.Format(Language.GetString(token), args.ToArray());
+
+            ExplicitBuildPing(sender.pingerController, targetObj, origPingInfo.origin, origPingInfo.normal, ownerText, chatText, Color.red, sprite, 15f);
+
+            //TODO: needs custom netmsg
+        }*/
+
+        private void CustomPingAggressive(Ray aimRay, PlayerCharacterMasterController sender) {
+            if(!TryDeductPingStock(sender.pingerController))
+                return;
+
+            PingerController.PingInfo origPingInfo;
+            PingerController.GeneratePingInfo(aimRay, sender.body.gameObject, out origPingInfo);
+            
+            var ownerText = Util.GetBestMasterName(sender.master);
+            var sprite = Resources.Load<Sprite>("textures/miscicons/texSprintIcon");
+            var targetObj = origPingInfo.targetGameObject;
+            
+            List<string> args = new List<string> {ownerText};
+            string token = "RADIALPINGS_AGGRESSIVE_NOTARGET";
+
+            if(targetObj) {
+                var dnProv = targetObj.GetComponentInParent<IDisplayNameProvider>();
+                if(dnProv != null) args.Add(Util.GetBestBodyName(((MonoBehaviour)dnProv).gameObject));
+                else args.Add(targetObj.name);
+                if(targetObj.GetComponent<CharacterBody>()) {
+                    token = "RADIALPINGS_AGGRESSIVE_ENEMY";
+                    sprite = Resources.Load<Sprite>("textures/miscicons/texAttackIcon");
+                } //todo: team-sensitive, maybe an assist option?
+                else if(targetObj.GetComponent<TeleporterInteraction>()) {
+                    token = "RADIALPINGS_AGGRESSIVE_TELEPORTER";
+                    sprite = Resources.Load<Sprite>("textures/miscicons/texTeleporterIconOutlined");
+                }
+                else if(targetObj.GetComponent<GenericPickupController>() || targetObj.GetComponent<PurchaseInteraction>()) {
+                    token = "RADIALPINGS_AGGRESSIVE_INTERACTABLE";
+                    sprite = Resources.Load<Sprite>("textures/miscicons/texLootIconOutlined");
+                } else {
+                    targetObj = sender.body.gameObject;
+                }
+            } else targetObj = sender.body.gameObject;
+
+            string chatText = string.Format(Language.GetString(token), args.ToArray());
+
+            ExplicitBuildPing(sender.pingerController, targetObj, origPingInfo.origin, origPingInfo.normal, ownerText, chatText, Color.red, sprite, 15f);
+
+            //TODO: needs custom netmsg
+        }
+
+        private enum PersonalCalloutPingType {
+            No, Heal, Yes
+        }
+
+        private void CustomPingCallout(Ray aimRay, PlayerCharacterMasterController sender, PersonalCalloutPingType type) {
+            PingerController.PingInfo origPingInfo;
+            PingerController.GeneratePingInfo(aimRay, sender.body.gameObject, out origPingInfo);
+            
+            var ownerText = Util.GetBestMasterName(sender.master);
+            
+            string token;
+            Sprite sprite;
+            Color color;
+
+            switch(type) {
+                case PersonalCalloutPingType.No:
+                    token = "RADIALPINGS_RESPONDNO_NOTARGET";
+                    sprite = Resources.Load<Sprite>("textures/miscicons/texTeleporterCharge");
+                    color = new Color(1f, 0.25f, 0.25f);
+                    break;
+                case PersonalCalloutPingType.Heal:
+                    token = "RADIALPINGS_HELP_NOTARGET";
+                    sprite = Resources.Load<Sprite>("textures/miscicons/texCriticallyHurtIcon");
+                    color = Color.red;
+                    break;
+                case PersonalCalloutPingType.Yes:
+                    token = "RADIALPINGS_RESPONDYES_NOTARGET";
+                    sprite = Resources.Load<Sprite>("textures/miscicons/texTeleporterCharge");
+                    color = new Color(0.25f, 1f, 0.25f);
+                    break;
+                default:
+                    return;
+            }
+            
+            if(!TryDeductPingStock(sender.pingerController))
+                return;
+
+            string chatText = string.Format(Language.GetString(token), ownerText);
+
+            ExplicitBuildPing(sender.pingerController, sender.body.gameObject, origPingInfo.origin, origPingInfo.normal, ownerText, chatText, color, sprite, 15f);
+        }
+        #endregion
+
+        #region Ping Contexts
+        private string PingContextLookHere(OctoRadialMenuController sender) {
+            var tgo = sender.previewPingInfo.targetGameObject;
+
+            if(tgo) {
+                var dnProv = tgo.GetComponentInParent<IDisplayNameProvider>();
+                if(dnProv != null) return string.Format(Language.GetString("RADIALPINGS_LOOK_CTXTARGET"), Util.GetBestBodyName(((MonoBehaviour)dnProv).gameObject));
+            }
+
+            return "";
+        }
+
+        private string PingContextAggressive(OctoRadialMenuController sender) {
+            var tgo = sender.previewPingInfo.targetGameObject;
+            
+            List<string> args = new List<string>();
+            string token = "RADIALPINGS_AGGRESSIVE_CTXNOTARGET";
+            string providerStr;
+
+            if(tgo) {
+                var dnProv = tgo.GetComponentInParent<IDisplayNameProvider>();
+                if(dnProv != null) {
+                    providerStr = Util.GetBestBodyName(((MonoBehaviour)dnProv).gameObject);
+                    args.Add(providerStr);
+                }
+                else args.Add(tgo.name);
+
+                if(tgo.GetComponent<CharacterBody>()) token = "RADIALPINGS_AGGRESSIVE_CTXENEMY"; //todo: team-sensitive, maybe an assist option?
+                else if(tgo.GetComponent<TeleporterInteraction>()) token = "RADIALPINGS_AGGRESSIVE_CTXTELEPORTER";
+                else if(tgo.GetComponent<GenericPickupController>() || tgo.GetComponent<PurchaseInteraction>()) token = "RADIALPINGS_AGGRESSIVE_CTXINTERACTABLE";
+            }
+
+            return string.Format(Language.GetString(token), args.ToArray());
+        }
+        #endregion
+
+        private void MainMenuActivation(PlayerCharacterMasterController sender, int index) {
+            var aimRay = new Ray(sender.bodyInputs.aimOrigin, sender.bodyInputs.aimDirection);
+            switch(index) {
+                case 2:
+                    CustomPingAggressive(aimRay, sender);
+                    break;
+                case 3:
+                    CustomPingMoveOnly(aimRay, sender);
+                    break;
+                case 5:
+                    CustomPingCallout(aimRay, sender, PersonalCalloutPingType.No);
+                    break;
+                case 6:
+                    CustomPingCallout(aimRay, sender, PersonalCalloutPingType.Heal);
+                    break;
+                case 7:
+                    CustomPingCallout(aimRay, sender, PersonalCalloutPingType.Yes);
+                    break;
+                case -1:
+                    sender.pingerController.AttemptPing(aimRay, sender.body.gameObject);
+                    break;
+                case -2:
+                default:
+                    break;
+            }
+        }
+
+        private void SetupMainMenuContextProviders(OctoRadialMenuController ctrl) {
+            ctrl.defaultSubcaptionContext = PingContextLookHere;
+            ctrl.subcaptionContexts[1] = PingContextLookHere;
+            ctrl.subcaptionContexts[2] = PingContextAggressive;
+        }
+
+        private void On_PlayerCharacterMasterController_CheckPinging(On.RoR2.PlayerCharacterMasterController.orig_CheckPinging orig, PlayerCharacterMasterController self) {
+            //no orig(self); for you
+            if(!self.hasEffectiveAuthority || !self.body || !self.bodyInputs) return;
+            OctoRadialMenuController latestPingMenu = null;
+            if(latestPingMenuObj) latestPingMenu = latestPingMenuObj.GetComponent<OctoRadialMenuController>();
+            if(self.bodyInputs.ping.justPressed) {
+                if(latestPingMenu) latestPingMenu.SilentActivate(); //cleanup just in case
+                var targetHud = RoR2.UI.HUD.readOnlyInstanceList.First(x => x.targetMaster == self.master);
+                latestPingMenuObj = GameObject.Instantiate(mainRadialMenuPrefab, targetHud.transform.Find("MainContainer").Find("MainUIArea"));
+                latestPingMenu = latestPingMenuObj.GetComponent<OctoRadialMenuController>();
+                latestPingMenu.targetPcmc = self;
+                latestPingMenu.targetCam = targetHud.canvas.worldCamera;
+                latestPingMenu.onActivate += MainMenuActivation;
+                SetupMainMenuContextProviders(latestPingMenu);
+            } else if(self.bodyInputs.ping.justReleased) {
+                if(!latestPingMenu) return;
+                latestPingMenu.Activate(self);
+            }
+        }
+
+    }
+}

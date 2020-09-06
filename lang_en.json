@@ -1,0 +1,66 @@
+{
+	strings: {
+		//[Global]
+		"RADIALPINGS_CAPTION_CANCEL": "Cancel",
+		"RADIALPINGS_CAPTION_RETURN": "Return",
+		"RADIALPINGS_CAPTION_NYI": "Work in progress...",
+
+		//[Main Menu]
+		"RADIALPINGS_CAPTION_MAIN_QUICK": "Quick Ping",
+		"RADIALPINGS_CAPTION_MAIN_TODRONES": "Work In Progress...",
+		"RADIALPINGS_CAPTION_MAIN_TOPLAYERS": "Ping Player...",
+
+		"RADIALPINGS_CAPTION_MAIN_LOOK": "Look at This",
+		"RADIALPINGS_CONTEXT_MAIN_LOOK_TARGET": "<style=cIsUtility>{0}</style>",
+		"RADIALPINGS_MESSAGE_MAIN_LOOK_NOTARGET": "<style=cIsUtility>{0} found something interesting...</style>",
+		"RADIALPINGS_MESSAGE_MAIN_LOOK_TARGET": "<style=cIsUtility>{0} found something interesting: {1}</style>",
+
+		"RADIALPINGS_CAPTION_MAIN_AGGRESSIVE": "Let's Go!",
+		"RADIALPINGS_CONTEXT_MAIN_AGGRESSIVE_NOTARGET": "<style=cIsHealth>Hurry Up!</style>",
+		"RADIALPINGS_CONTEXT_MAIN_AGGRESSIVE_ENEMY": "<style=cIsHealth>Attack {0}!</style>",
+		"RADIALPINGS_CONTEXT_MAIN_AGGRESSIVE_INTERACTABLE": "<style=cIsHealth>I Want That {0}!</style>",
+		"RADIALPINGS_CONTEXT_MAIN_AGGRESSIVE_TELEPORTER": "<style=cIsHealth>Start Teleporter<sprite name=\"TP\" tint=1></style>!",
+		"RADIALPINGS_MESSAGE_MAIN_AGGRESSIVE_NOTARGET": "<style=cIsHealth>{0} wants to hurry up!</style>",
+		"RADIALPINGS_MESSAGE_MAIN_AGGRESSIVE_ENEMY": "<style=cIsHealth>{0} wants to attack: {1}!</style>",
+		"RADIALPINGS_MESSAGE_MAIN_AGGRESSIVE_INTERACTABLE": "<style=cIsHealth>{0} claims: {1}!</style>",
+		"RADIALPINGS_MESSAGE_MAIN_AGGRESSIVE_TELEPORTER": "<style=cIsHealth>{0} is ready to start the <style=cDeath>Teleporter <sprite name=\"TP\" tint=1></style>!</style>",
+
+		"RADIALPINGS_CAPTION_MAIN_MOVE": "Move Here",
+
+		"RADIALPINGS_CAPTION_MAIN_YES": "Yes",
+		"RADIALPINGS_MESSAGE_MAIN_YES": "<style=cIsDamage>{0} says</style> <style=cIsHealing>yes</style>.",
+
+		"RADIALPINGS_CAPTION_MAIN_HELP": "Help Me!",
+		"RADIALPINGS_MESSAGE_MAIN_HELP": "<style=cDeath>{0} is calling for HELP!</style>",
+
+		"RADIALPINGS_CAPTION_MAIN_NO": "No",
+		"RADIALPINGS_MESSAGE_MAIN_NO": "<style=cIsDamage>{0} says</style> <style=cDeath>no</style>.",
+
+		//[Drone Orders]
+		"RADIALPINGS_CAPTION_DRONE_FOLLOW": "Follow Me",
+		"RADIALPINGS_CAPTION_DRONE_MOVE": "Move Here",
+		"RADIALPINGS_CAPTION_DRONE_STOP": "Hold Position",
+		"RADIALPINGS_CAPTION_DRONE_ATTACK": "Attack!",
+		"RADIALPINGS_CAPTION_DRONE_PATROL": "Patrol",
+
+		//[Ping Player]
+		"RADIALPINGS_MESSAGE_PLAYER_NOTARGET": "{0} pokes {1}.",
+		"RADIALPINGS_MESSAGE_PLAYER_PICKUP": "<style=cIsDamage>{0} wants {1} to take {2}.</style>",
+		"RADIALPINGS_MESSAGE_PLAYER_INTERACTABLE": "<style=cIsDamage>{0} wants {1} to activate {2}.</style>",
+		"RADIALPINGS_MESSAGE_PLAYER_TELEPORTER": "<style=cIsHealth>{0} wants {1} to get to the <style=cDeath>Teleporter <sprite name=\"TP\" tint=1></style>!</style>",
+		"RADIALPINGS_MESSAGE_PLAYER_RECIPIENT": "<style=cIsHealing>{0} wants to group up with {1}.</style>",
+		"RADIALPINGS_MESSAGE_PLAYER_ENEMY": "<style=cIsHealth>{0} wants {1} to focus on attacking {2}.</style>",
+		"RADIALPINGS_MESSAGE_PLAYER_NOTARGET_2P": "{0} pokes you.",
+		"RADIALPINGS_MESSAGE_PLAYER_PICKUP_2P": "<style=cIsDamage>{0} wants you to take {2}.</style>",
+		"RADIALPINGS_MESSAGE_PLAYER_INTERACTABLE_2P": "<style=cIsDamage>{0} wants you to activate {2}.</style>",
+		"RADIALPINGS_MESSAGE_PLAYER_TELEPORTER_2P": "<style=cIsHealth>{0} wants you to get to the <style=cDeath>Teleporter <sprite name=\"TP\" tint=1></style>!</style>",
+		"RADIALPINGS_MESSAGE_PLAYER_RECIPIENT_2P": "<style=cIsHealing>{0} wants to group up with you.</style>",
+		"RADIALPINGS_MESSAGE_PLAYER_ENEMY_2P": "<style=cIsHealth>{0} wants you to focus on attacking {2}.</style>",
+		"RADIALPINGS_CONTEXT_PLAYER_NOTARGET": "Poke",
+		"RADIALPINGS_CONTEXT_PLAYER_PICKUP": "<style=cIsDamage>Take {1}</style>",
+		"RADIALPINGS_CONTEXT_PLAYER_INTERACTABLE": "<style=cIsDamage>Use {1}</style>",
+		"RADIALPINGS_CONTEXT_PLAYER_TELEPORTER": "<style=cIsHealth>Move To Teleporter<sprite name=\"TP\" tint=1>!</style>",
+		"RADIALPINGS_CONTEXT_PLAYER_RECIPIENT": "<style=cIsHealing>Group Up</style>",
+		"RADIALPINGS_CONTEXT_PLAYER_ENEMY": "<style=cIsHealth>Attack {1}</style>"
+	}
+}
