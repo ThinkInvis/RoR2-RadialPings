@@ -5,11 +5,12 @@ using static ThinkInvisible.RadialPings.PingCatalog;
 
 namespace ThinkInvisible.RadialPings {
     internal class PlayersMenuBindings : RadialMenuBindings<PlayersMenuBindings> {
-        PingType PlayerPingTypeNoTarget;
-        PingType PlayerPingTypePickup;
-        PingType PlayerPingTypeInteractable;
-        PingType PlayerPingTypeEnemy;
-        //CustomPingType PlayerPingTypeAlly;
+        readonly PingType PlayerPingTypeNoTarget;
+        readonly PingType PlayerPingTypePickup;
+        readonly PingType PlayerPingTypeInteractable;
+        readonly PingType PlayerPingTypeEnemy;
+        readonly PingType PlayerPingTypeAlly;
+        readonly PingType PlayerPingTypeRecipient;
 
         internal PlayersMenuBindings() {
             PlayerPingTypeNoTarget = new PingType("RADIALPINGS_CONTEXT_PLAYER_NOTARGET",
@@ -17,10 +18,10 @@ namespace ThinkInvisible.RadialPings {
                     tokens.Add(Util.GetBestMasterName(pingData.targets[1].GetComponent<PlayerCharacterMasterController>().master));
                     return true;
                 }, MiscUtil.ModifyTarget2PRecipient);
-            PlayerPingTypeNoTarget.pingSkins.Add(new PingSkin(Color.white, Resources.Load<Sprite>("textures/miscicons/texCursor3"), 1f,
-                "RADIALPINGS_MESSAGE_PLAYER_NOTARGET", PingIndicator.PingType.Default));
-            PlayerPingTypeNoTarget.pingSkins.Add(new PingSkin(Color.white, Resources.Load<Sprite>("textures/miscicons/texCursor3"), 5f,
-                "RADIALPINGS_MESSAGE_PLAYER_NOTARGET_2P", PingIndicator.PingType.Default));
+            PlayerPingTypeNoTarget.pingSkins.Add(new PingSkin(new Color(0.125f, 0.5f, 0.125f, 0.25f), Resources.Load<Sprite>("textures/miscicons/texSprintIcon"), 15f,
+                "RADIALPINGS_MESSAGE_PLAYER_NOTARGET", PingIndicator.PingType.Enemy));
+            PlayerPingTypeNoTarget.pingSkins.Add(new PingSkin(Color.green, Resources.Load<Sprite>("textures/miscicons/texSprintIcon"), 15f,
+                "RADIALPINGS_MESSAGE_PLAYER_NOTARGET_2P", PingIndicator.PingType.Enemy, Highlight.HighlightColor.pickup, 1f));
 
             PlayerPingTypePickup = new PingType("RADIALPINGS_CONTEXT_PLAYER_PICKUP",
                 (pingData, tokens) => {
@@ -68,27 +69,54 @@ namespace ThinkInvisible.RadialPings {
             PlayerPingTypeEnemy.pingSkins.Add(new PingSkin(Color.red, Resources.Load<Sprite>("textures/miscicons/texAttackIcon"), 15f,
                 "RADIALPINGS_MESSAGE_PLAYER_ENEMY_2P", PingIndicator.PingType.Enemy, Highlight.HighlightColor.teleporter, 1f));
 
-            /*PlayerPingTypeAlly = new CustomPingType("RADIALPINGS_CONTEXT_PLAYER_ALLY",
+            PlayerPingTypeAlly = new PingType("RADIALPINGS_CONTEXT_PLAYER_ALLY",
                 (pingData, tokens) => {
                     var targetObj = pingData.targets[0];
-                    if(targetObj == null || !targetObj.GetComponent<CharacterBody>()) return false;
+                    if(targetObj == null) return false;
+                    var body = targetObj.GetComponent<CharacterBody>();
+                    if(!body || !body.teamComponent) return false;
+
+                    var ownerBody = pingData.owner.master.GetBody();
+                    if(!ownerBody || !ownerBody.teamComponent || ownerBody.teamComponent.teamIndex != body.teamComponent.teamIndex) return false;
+
                     string token = null;
                     if(!MiscUtil.TryGetObjDisplayName(targetObj, ref token)) return false;
+                    if(body.master) token = Util.GetBestMasterName(body.master) ?? token;
                     tokens.Add(Util.GetBestMasterName(pingData.targets[1].GetComponent<PlayerCharacterMasterController>().master));
                     tokens.Add(token);
                     return true;
                 }, MiscUtil.CheckTarget2PRecipient);
-            PlayerPingTypeEnemy.pingSkins.Add(new CustomPingSkin(new Color(0.125f, 0.125f, 0.5f, 0.25f), Resources.Load<Sprite>("textures/miscicons/texAttackIcon"), 15f,
+            PlayerPingTypeAlly.pingSkins.Add(new PingSkin(new Color(0.125f, 0.5f, 0.125f, 0.25f), Resources.Load<Sprite>("textures/miscicons/texSprintIcon"), 15f,
                 "RADIALPINGS_MESSAGE_PLAYER_ALLY", PingIndicator.PingType.Enemy));
-            PlayerPingTypeEnemy.pingSkins.Add(new CustomPingSkin(Color.blue, Resources.Load<Sprite>("textures/miscicons/texAttackIcon"), 15f,
-                "RADIALPINGS_MESSAGE_PLAYER_ALLY_2P", PingIndicator.PingType.Enemy, Highlight.HighlightColor.interactive, 1f));*/
+            PlayerPingTypeAlly.pingSkins.Add(new PingSkin(Color.green, Resources.Load<Sprite>("textures/miscicons/texSprintIcon"), 15f,
+                "RADIALPINGS_MESSAGE_PLAYER_ALLY_2P", PingIndicator.PingType.Enemy, Highlight.HighlightColor.pickup, 1f));
+
+            PlayerPingTypeRecipient = new PingType("RADIALPINGS_CONTEXT_PLAYER_RECIPIENT",
+                (pingData, tokens) => {
+                    var targetObj = pingData.targets[0];
+                    if(targetObj == null) return false;
+                    var body = targetObj.GetComponent<CharacterBody>();
+                    if(!body) return false;
+
+                    var targetPcmc = pingData.targets[1].GetComponent<PlayerCharacterMasterController>();
+                    var targetBody = targetPcmc.master.GetBody();
+                    if(!targetBody || targetBody != body) return false;
+
+                    tokens.Add(Util.GetBestMasterName(targetPcmc.master));
+                    return true;
+                }, MiscUtil.CheckTarget2PRecipient);
+            PlayerPingTypeRecipient.pingSkins.Add(new PingSkin(Color.white, Resources.Load<Sprite>("textures/miscicons/texCursor3"), 1f,
+                "RADIALPINGS_MESSAGE_PLAYER_RECIPIENT", PingIndicator.PingType.Default));
+            PlayerPingTypeRecipient.pingSkins.Add(new PingSkin(Color.white, Resources.Load<Sprite>("textures/miscicons/texCursor3"), 5f,
+                "RADIALPINGS_MESSAGE_PLAYER_RECIPIENT_2P", PingIndicator.PingType.Default));
 
             PingCatalog.getAdditionalEntries += (list) => {
                 list.Add(PlayerPingTypeNoTarget);
                 list.Add(PlayerPingTypePickup);
                 list.Add(PlayerPingTypeInteractable);
                 list.Add(PlayerPingTypeEnemy);
-                //list.Add(PlayerPingTypeAlly);
+                list.Add(PlayerPingTypeAlly);
+                list.Add(PlayerPingTypeRecipient);
             };
         }
 
@@ -104,7 +132,7 @@ namespace ThinkInvisible.RadialPings {
                     descriptionToken = $"{player.GetDisplayName()}",
                     sprite = destSprite,
                     targetPCMC = player,
-                    orderedTypes = new[] {PlayerPingTypeEnemy, PlayerPingTypePickup, PlayerPingTypeInteractable, PlayerPingTypeNoTarget}
+                    orderedTypes = new[] {PlayerPingTypeRecipient, PlayerPingTypeAlly, PlayerPingTypeEnemy, PlayerPingTypePickup, PlayerPingTypeInteractable, PlayerPingTypeNoTarget}
                 });
             }
 
