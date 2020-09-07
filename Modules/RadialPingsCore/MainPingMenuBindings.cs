@@ -150,8 +150,6 @@ namespace ThinkInvisible.RadialPings {
                     if(isHover) {
                         var pingHelper = sender.GetComponent<PingMenuHelper>();
                         pingHelper.owner.GetComponent<PingMenuInstanceTracker>().latestMenu = PlayersMenuBindings.instance.Instantiate(pingHelper.owner);
-                        var targetHUD = HUD.readOnlyInstanceList.First(x => x.targetMaster == pingHelper.owner.master);
-                        targetHUD.eventSystemProvider.eventSystem.GetComponent<MPInput>().CenterCursor();
                     } else
                         CancelMenuAction(sender, isHover);
                 }
