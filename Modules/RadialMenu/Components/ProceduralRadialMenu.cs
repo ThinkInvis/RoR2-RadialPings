@@ -100,7 +100,7 @@ namespace ThinkInvisible.RadialPings {
 					|| (cursorThetaWrapDown > targetThetaMin && cursorThetaWrapDown < targetThetaMax)
 					|| (cursorThetaWrapUp > targetThetaMin && cursorThetaWrapUp < targetThetaMax)) {
 					selectedButton = i;
-					if(cursorDistNorm > 1f) {
+					if(cursorDistNorm > buttons[i].outerRadiusFrac) {
 						selectedRegion = SelectionRegion.OuterDeadZone;
 						buttons[i].hoverActive = false;
 					} else if(cursorDistNorm < buttons[i].innerRadiusFrac) {

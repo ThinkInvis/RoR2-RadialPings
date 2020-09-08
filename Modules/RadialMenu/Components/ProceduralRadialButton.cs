@@ -44,6 +44,11 @@ namespace ThinkInvisible.RadialPings {
 		[SerializeField]
 		float _innerRadiusFrac = 0.25f;
 		public float innerRadiusFrac {get => _innerRadiusFrac; set {_innerRadiusFrac = value; SetCustomLayoutDirty();}}
+		
+		[SerializeField]
+		float _outerRadiusFrac = 1f;
+		public float outerRadiusFrac {get => _outerRadiusFrac; set {_outerRadiusFrac = value; SetCustomLayoutDirty();}}
+
 		[SerializeField]
 		float _widthAngleRad = Mathf.PI/4f;
 		public float widthAngleRad {get => _widthAngleRad; set {_widthAngleRad = value; SetCustomLayoutDirty();}}
@@ -142,8 +147,9 @@ namespace ThinkInvisible.RadialPings {
 			vh.Clear();
 			
 			var offset = rectTransform.pivot;
-			var outerRadius = Mathf.Min(rectTransform.rect.width, rectTransform.rect.height)/2f;
-			var innerRadius = outerRadius * innerRadiusFrac;
+			var boundsRadius = Mathf.Min(rectTransform.rect.width, rectTransform.rect.height)/2f;
+			var outerRadius = boundsRadius * outerRadiusFrac;
+			var innerRadius = boundsRadius * innerRadiusFrac;
 			
 			var vertIndex = vh.currentVertCount;
 			
