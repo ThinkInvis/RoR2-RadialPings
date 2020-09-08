@@ -99,7 +99,6 @@ namespace ThinkInvisible.RadialPings {
 				if((cursorThetaRad > targetThetaMin && cursorThetaRad < targetThetaMax)
 					|| (cursorThetaWrapDown > targetThetaMin && cursorThetaWrapDown < targetThetaMax)
 					|| (cursorThetaWrapUp > targetThetaMin && cursorThetaWrapUp < targetThetaMax)) {
-					selectedButton = i;
 					if(cursorDistNorm > buttons[i].outerRadiusFrac) {
 						selectedRegion = SelectionRegion.OuterDeadZone;
 						buttons[i].hoverActive = false;
@@ -107,6 +106,7 @@ namespace ThinkInvisible.RadialPings {
 						selectedRegion = SelectionRegion.InnerDeadZone;
 						buttons[i].hoverActive = false;
 					} else {
+						selectedButton = i;
 						selectedRegion = SelectionRegion.Button;
 						buttons[i].hoverActive = true;
 						if(buttons[i].isHoverComplete) {
