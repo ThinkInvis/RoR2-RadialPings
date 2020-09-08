@@ -9,6 +9,8 @@ namespace ThinkInvisible.RadialPings {
 	public class ProceduralRadialMenu : MonoBehaviour {
 		internal static GameObject buttonPrefab = null;
 
+		public float deadZoneSplitRadiusNorm = 1f;
+
 		//display properties
 		public float inOutAnimSpeed = 0.2f;
 		public float hoverScale = 1.1f;
@@ -119,7 +121,7 @@ namespace ThinkInvisible.RadialPings {
 				}
 			}
 
-			if(selectedButton == -1) selectedRegion = (cursorDistNorm > 1f) ? SelectionRegion.OuterDeadZone : SelectionRegion.InnerDeadZone;
+			if(selectedButton == -1) selectedRegion = (cursorDistNorm > deadZoneSplitRadiusNorm) ? SelectionRegion.OuterDeadZone : SelectionRegion.InnerDeadZone;
 		}
 
 		void UpdateDisplay() {
