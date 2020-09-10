@@ -6,12 +6,23 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace ThinkInvisible.RadialPings {
+	///<summary>Handles layout and cursor events for related instances of ProceduralRadialButton. Use RadialMenuBindings to create an instance.</summary>
 	public class ProceduralRadialMenu : MonoBehaviour {
 		internal static GameObject buttonPrefab = null;
 
+		//behavior
 		public float deadZoneSplitRadiusNorm = 1f;
 
-		//display properties
+		public ProceduralRadialButton.OnActivate onInnerDeadZoneActivate;
+		public ProceduralRadialButton.OnActivate onOuterDeadZoneActivate;
+		public ProceduralRadialButton.ContextStringProvider innerDeadZoneContext;
+		public ProceduralRadialButton.ContextStringProvider outerDeadZoneContext;
+		public string innerDeadZoneToken;
+		public string outerDeadZoneToken;
+
+		public event ProceduralRadialButton.OnActivate onAnyActivate;
+
+		//display
 		public float inOutAnimSpeed = 0.2f;
 		public float hoverScale = 1.1f;
 		public float unhoverTrans = 0.5f;
@@ -28,14 +39,6 @@ namespace ThinkInvisible.RadialPings {
 
 		private float displayOnlyThetaOffsetDegr = 0f;
 
-		public ProceduralRadialButton.OnActivate onInnerDeadZoneActivate;
-		public ProceduralRadialButton.OnActivate onOuterDeadZoneActivate;
-		public ProceduralRadialButton.ContextStringProvider innerDeadZoneContext;
-		public ProceduralRadialButton.ContextStringProvider outerDeadZoneContext;
-		public string innerDeadZoneToken;
-		public string outerDeadZoneToken;
-
-		public event ProceduralRadialButton.OnActivate onAnyActivate;
 
 		List<ProceduralRadialButton> buttons = new List<ProceduralRadialButton>();
 		
