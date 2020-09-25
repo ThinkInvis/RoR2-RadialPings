@@ -235,7 +235,7 @@ namespace ThinkInvisible.RadialPings {
                 RadialPingsPlugin.logger.LogWarning($"PerformCustomPing failed to apply CustomPingType {nameof(pingType)} (likely missing networkidentity on target object)");
                 return;
             }
-            var skin = pingType.pingSkins[pingType.modifyAndSelectSkin?.Invoke(ref pingData) ?? 0];
+            var skin = pingType.pingSkins[pingType.modifyAndSelectSkin?.Invoke(ref pingData, pingType.catalogIndex, args) ?? 0];
 
             var chatText = string.Format(Language.GetString(skin.chatToken), args.ToArray());
 

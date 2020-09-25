@@ -87,7 +87,7 @@ namespace ThinkInvisible.RadialPings {
             public readonly List<PingSkin> pingSkins = new List<PingSkin>();
 
             public delegate bool TryApplyDelegate(PingData pingData, List<string> formatInserts);
-            public delegate int ModifyDelegate(ref PingData pingData);
+            public delegate int ModifyDelegate(ref PingData pingData, int pingTypeCatalogIndex, List<string> formatInserts);
 
             public readonly string previewToken;
             ///<summary>Used to retrieve object name information and pass/fail status for both previews and pings.</summary>

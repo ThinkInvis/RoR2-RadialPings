@@ -33,4 +33,15 @@ namespace ThinkInvisible.RadialPings {
             return pingHelper.GetFormattedContext(new[] {targetPCMC.gameObject}, orderedTypes);
         }
     }
+
+    public class HybridHoverPingBindingInfo : PingBindingInfo {
+        public ProceduralRadialButton.OnActivate onHoverActivate;
+
+        public override void PingOnActivate(ProceduralRadialMenu sender, bool isHover) {
+            if(isHover)
+                onHoverActivate?.Invoke(sender, isHover);
+            else
+                base.PingOnActivate(sender, isHover);
+        }
+    }
 }

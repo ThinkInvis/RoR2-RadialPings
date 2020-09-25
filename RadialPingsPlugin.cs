@@ -7,13 +7,18 @@ using System.Reflection;
 using Path = System.IO.Path;
 using RoR2;
 using System.IO;
+using UnityEngine.Networking;
 
 namespace ThinkInvisible.RadialPings {
     [BepInDependency("com.bepis.r2api", "2.5.14")]
     [BepInPlugin(ModGuid, ModName, ModVer)]
     [R2APISubmoduleDependency(nameof(ResourcesAPI), nameof(R2API.Networking.NetworkingAPI))]
     public class RadialPingsPlugin:BaseUnityPlugin {
-        public const string ModVer = "1.0.0";
+        public const string ModVer =
+#if DEBUG
+            "0." +
+#endif
+            "1.1.0";
         public const string ModName = "RadialPings";
         public const string ModGuid = "com.ThinkInvisible.RadialPings";
         
@@ -50,14 +55,37 @@ namespace ThinkInvisible.RadialPings {
             new MainPingMenuBindings();
             new PlayersMenuBindings();
             new DroneMenuBindings();
+            new RespondablesMenuBindings();
 
             On.RoR2.PlayerCharacterMasterController.CheckPinging += On_PlayerCharacterMasterController_CheckPinging;
+            On.RoR2.Run.OnDestroy += On_Run_OnDestroy;
 
             R2API.Networking.NetworkingAPI.RegisterMessageType<PingMenuHelper.MsgCustomPing>();
+
+            #if DEBUG
+            On.RoR2.Networking.GameNetworkManager.OnClientConnect += (orig, self, conn) => {
+                if(!self.clientLoadedScene) {
+				    ClientScene.Ready(conn);
+				    if(self.autoCreatePlayer) ClientScene.AddPlayer(0);
+			    }
+			    self.clientRttFrame = 0f;
+			    self.filteredClientRttFixed = 0f;
+                self.ClientSetPlayers(conn);
+                RoR2.Networking.RttManager.OnConnectionDiscovered(conn);
+            };
+            On.RoR2.NetworkUser.UpdateUserName += (orig, self) => {
+                self.userName = $"DEBUG USER NetID:{self.netId}";
+            };
+            #endif
         }
 
         void Start() {
             PingCatalog.Init();
+        }
+        
+        private void On_Run_OnDestroy(On.RoR2.Run.orig_OnDestroy orig, Run self) {
+            orig(self);
+            RespondablesMenuBindings.UpdateRespondables();
         }
 
         private void On_PlayerCharacterMasterController_CheckPinging(On.RoR2.PlayerCharacterMasterController.orig_CheckPinging orig, PlayerCharacterMasterController self) {

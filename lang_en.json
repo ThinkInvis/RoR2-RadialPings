@@ -64,6 +64,13 @@
 		"RADIALPINGS_CONTEXT_PLAYER_TELEPORTER": "<style=cIsHealth>Move To Teleporter<sprite name=\"TP\" tint=1>!</style>",
 		"RADIALPINGS_CONTEXT_PLAYER_RECIPIENT": "Poke",
 		"RADIALPINGS_CONTEXT_PLAYER_ENEMY": "<style=cIsHealth>Attack {1}</style>",
-		"RADIALPINGS_CONTEXT_PLAYER_ALLY": "<style=cIsHealing>Follow {1}</style>"
+		"RADIALPINGS_CONTEXT_PLAYER_ALLY": "<style=cIsHealing>Follow {1}</style>",
+
+		//[Responses]
+		"RADIALPINGS_MESSAGE_RESPOND_NO": "<style=cIsUtility>{1}: {2}</style>: <style=cIsHealing>{3}</style>/<style=cStack>{4}</style>/<style=cDeath>{5}</style> ({0} voted <style=cDeath>No</style>)",
+		"RADIALPINGS_MESSAGE_RESPOND_YES": "<style=cIsUtility>{1}: {2}</style>: <style=cIsHealing>{3}</style>/<style=cStack>{4}</style>/<style=cDeath>{5}</style> ({0} voted <style=cIsHealing>Yes</style>)",
+		"RADIALPINGS_CONTEXT_RESPOND_NO": "<style=cIsUtility>{0}: {1}</style>: Vote No",
+		"RADIALPINGS_CONTEXT_RESPOND_YES": "<style=cIsUtility>{0}: {1}</style>: Vote Yes",
+		"RADIALPINGS_SPECIAL_RESPONDABLE_START": "<style=cIsUtility>Votable ping started</style> <style=cStack>(hover Yes/No to vote within {0} seconds)</style>:"
 	}
 }

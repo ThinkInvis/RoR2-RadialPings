@@ -1,11 +1,13 @@
 ﻿using RoR2;
 using RoR2.UI;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static ThinkInvisible.RadialPings.PingCatalog;
 
 namespace ThinkInvisible.RadialPings {
     internal class MainPingMenuBindings : RadialMenuBindings<MainPingMenuBindings> {
+
         internal MainPingMenuBindings() {
             var LookHerePingTypeTarget = new PingType("RADIALPINGS_CONTEXT_MAIN_LOOK_TARGET",
                 (pingData, tokens) => {
@@ -40,6 +42,9 @@ namespace ThinkInvisible.RadialPings {
                 (pingData, tokens) => {
                     if(pingData.targets[0] == null || !pingData.targets[0].GetComponent<TeleporterInteraction>()) return false;
                     return true;
+                }, (ref PingData pingData, int catalogIndex, List<string> formatInserts) => {
+                    RespondablesMenuBindings.SetRespondable(pingData.owner, pingData, catalogIndex, 0, string.Format(Language.GetString("RADIALPINGS_CONTEXT_MAIN_AGGRESSIVE_TELEPORTER"), formatInserts.ToArray()));
+                    return 0;
                 });
             AggressivePingTypeTeleporter.pingSkins.Add(new PingSkin(new Color(1f, 0.5f, 0f), Resources.Load<Sprite>("textures/miscicons/texTeleporterIconOutlined"), 15f,
                 "RADIALPINGS_MESSAGE_MAIN_AGGRESSIVE_TELEPORTER", PingIndicator.PingType.Interactable,
@@ -66,7 +71,10 @@ namespace ThinkInvisible.RadialPings {
             var AggressivePingTypeNoTarget = new PingType("RADIALPINGS_CONTEXT_MAIN_AGGRESSIVE_NOTARGET",
                 (targetObj, tokens) => {
                     return true;
-                }, MiscUtil.ModifyTargetSelf);
+                }, (ref PingData pingData, int catalogIndex, List<string> formatInserts) => {
+                    RespondablesMenuBindings.SetRespondable(pingData.owner, pingData, catalogIndex, 0, string.Format(Language.GetString("RADIALPINGS_CONTEXT_MAIN_AGGRESSIVE_NOTARGET"), formatInserts.ToArray()));
+                    return MiscUtil.ModifyTargetSelf(ref pingData, catalogIndex, formatInserts);
+                });
             AggressivePingTypeNoTarget.pingSkins.Add(new PingSkin(new Color(1f, 0.5f, 0f), Resources.Load<Sprite>("textures/miscicons/texSprintIcon"), 8f,
                 "RADIALPINGS_MESSAGE_MAIN_AGGRESSIVE_NOTARGET", PingIndicator.PingType.Default));
 
@@ -155,11 +163,18 @@ namespace ThinkInvisible.RadialPings {
                 }
             });
 
-            buttonBindingInfos.Add(new PingBindingInfo {
+            buttonBindingInfos.Add(new HybridHoverPingBindingInfo {
                 descriptionToken = "RADIALPINGS_CAPTION_MAIN_NO",
                 sprite = Resources.Load<Sprite>("@RadialPings:Assets/RadialPings/RadialPingsXIcon.png"),
                 iconColor = new Color(1f, 0.625f, 0.625f),
-                orderedTypes = new[] {RespondNoPingType}
+                orderedTypes = new[] {RespondNoPingType},
+                hoverFillColor = new Color(0.5f, 0.5f, 0.5f, 0.5f),
+                hoverActivationTime = 0.75f,
+                onHoverActivate = (sender, isHover) => {
+                    var pingHelper = sender.GetComponent<PingMenuHelper>();
+                    RespondablesMenuBindings.instance.responseType = RespondablesMenuBindings.ResponseType.No;
+                    pingHelper.owner.GetComponent<PingMenuInstanceTracker>().latestMenu = RespondablesMenuBindings.instance.Instantiate(pingHelper.owner);
+                }
             });
 
             buttonBindingInfos.Add(new PingBindingInfo {
@@ -169,11 +184,18 @@ namespace ThinkInvisible.RadialPings {
                 orderedTypes = new[] {RespondHelpPingType}
             });
 
-            buttonBindingInfos.Add(new PingBindingInfo {
+            buttonBindingInfos.Add(new HybridHoverPingBindingInfo {
                 descriptionToken = "RADIALPINGS_CAPTION_MAIN_YES",
                 sprite = Resources.Load<Sprite>("@RadialPings:Assets/RadialPings/RadialPingsOIcon.png"),
                 iconColor = new Color(0.625f, 1f, 0.625f),
-                orderedTypes = new[] {RespondYesPingType}
+                orderedTypes = new[] {RespondYesPingType},
+                hoverFillColor = new Color(0.5f, 0.5f, 0.5f, 0.5f),
+                hoverActivationTime = 0.75f,
+                onHoverActivate = (sender, isHover) => {
+                    var pingHelper = sender.GetComponent<PingMenuHelper>();
+                    RespondablesMenuBindings.instance.responseType = RespondablesMenuBindings.ResponseType.Yes;
+                    pingHelper.owner.GetComponent<PingMenuInstanceTracker>().latestMenu = RespondablesMenuBindings.instance.Instantiate(pingHelper.owner);
+                }
             });
 
             innerDeadZoneBindingInfo = new BindingInfo {
