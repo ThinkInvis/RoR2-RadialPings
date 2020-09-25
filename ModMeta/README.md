@@ -12,6 +12,8 @@ No mic? No problem! This mod adds a way to control exactly what you say with a p
 
 Press and release the ping keybind within a configurable time (default 0.2s) to perform a vanilla Quick Ping instead of opening the menu.
 
+Some ping types start a limited-time vote. The Yes/No ping types are used to vote on votable pings.
+
 ### Current options
 
 #### Quick Ping
@@ -27,9 +29,9 @@ Performs no ping at all. Occupies the menu's outer dead zone (move the cursor ou
 Generally aggressive option.
 
 - Ping an item/interactable to claim it.
-- Ping the Teleporter to suggest starting it.
+- Ping the Teleporter to suggest starting it (votable).
 - Ping an enemy to suggest attacking it.
-- Ping any other point to say you want to hurry up.
+- Ping any other point to say you want to hurry up (votable).
 
 #### Look at This
 
@@ -49,6 +51,7 @@ A variant of the vanilla ping which can never ping an object, only a surface.
 Pings yourself and says "yes"/"no" in chat, complete with matching in-world icon.
 
 - Ping any point for a self-ping.
+- Hover to open a menu for voting on votable pings.
 
 #### Help Me!
 
@@ -64,6 +67,7 @@ ON HOVER: Opens a second menu with one option for each player in your current ga
 - Ping an interactable to suggest that the player should use it.
 - Ping the Teleporter to tell the player to get there.
 - Ping an enemy to tell the player to focus attacks on that enemy.
+- Ping an ally to tell the player to follow that ally.
 - Ping any other point to poke the player.
 - Select the inner or outer dead zone to cancel pinging.
 
@@ -71,12 +75,20 @@ ON HOVER: Opens a second menu with one option for each player in your current ga
 
 - An Order Drones feature is planned.
 - Streamlined support for other mods to add additional options is planned.
-- Let's Go! and Ping Player options leave some cases (namely targeting allies) poorly handled.
+- Let's Go! options leave some cases (namely targeting allies) poorly handled.
 - Some other options may not be final.
 - Text in the UI is a little shakily positioned.
 - See the GitHub repo for more!
 
 ## Changelog
+
+**2.0.0**
+
+- Finished implementing Ping Player options.
+- Slightly improved behavior of inner dead zone and button selection.
+- Added an experimental Respondables system. Let's Go! > Start Teleporter and Let's Go! > Hurry Up pings can now be responded to with a vote within 30 seconds of the original ping.
+- Reorganized project into 3 modules (RadialMenu, PingCatalog, RadialPingsCore). RadialMenu may be split into its own mod at a later date.
+- Added documentation in several areas.
 
 **1.0.0**
 
