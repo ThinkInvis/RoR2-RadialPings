@@ -82,6 +82,10 @@ ON HOVER: Opens a second menu with one option for each player in your current ga
 
 ## Changelog
 
+**2.0.1**
+
+- Added missing dependency flag for R2API.LanguageAPI.
+
 **2.0.0**
 
 - Finished implementing Ping Player options.

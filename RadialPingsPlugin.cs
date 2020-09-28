@@ -18,7 +18,7 @@ namespace ThinkInvisible.RadialPings {
 #if DEBUG
             "0." +
 #endif
-            "2.0.0";
+            "2.0.1";
         public const string ModName = "RadialPings";
         public const string ModGuid = "com.ThinkInvisible.RadialPings";
         
