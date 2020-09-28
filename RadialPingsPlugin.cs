@@ -12,7 +12,7 @@ using UnityEngine.Networking;
 namespace ThinkInvisible.RadialPings {
     [BepInDependency("com.bepis.r2api", "2.5.14")]
     [BepInPlugin(ModGuid, ModName, ModVer)]
-    [R2APISubmoduleDependency(nameof(ResourcesAPI), nameof(R2API.Networking.NetworkingAPI))]
+    [R2APISubmoduleDependency(nameof(ResourcesAPI), nameof(R2API.Networking.NetworkingAPI), nameof(LanguageAPI))]
     public class RadialPingsPlugin:BaseUnityPlugin {
         public const string ModVer =
 #if DEBUG
