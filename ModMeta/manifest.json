@@ -1,10 +1,10 @@
 {
   "name": "RadialPings",
-  "version_number": "2.0.1",
+  "version_number": "2.0.2",
   "website_url": "https://github.com/ThinkInvis/RoR2-RadialPings",
   "description": "Adds a radial menu for finer control of ping messages.",
   "dependencies": [
     "bbepis-BepInExPack-5.3.1",
-    "tristanmcpherson-R2API-2.5.14"
+    "tristanmcpherson-R2API-3.0.0"
   ]
 }

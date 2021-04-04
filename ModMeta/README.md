@@ -82,6 +82,12 @@ ON HOVER: Opens a second menu with one option for each player in your current ga
 
 ## Changelog
 
+**2.0.2**
+
+- Updated core lib references.
+- Updated R2API dependency to 3.0.0.
+- No further changes seem to be necessary for compatibility with ROR2 Anniversary Update.
+
 **2.0.1**
 
 - Added missing dependency flag for R2API.LanguageAPI.
