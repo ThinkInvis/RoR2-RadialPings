@@ -1,4 +1,5 @@
-﻿using RoR2.UI;
+﻿using RoR2;
+using RoR2.UI;
 using TMPro;
 using UnityEngine;
 
@@ -7,8 +8,8 @@ namespace ThinkInvisible.RadialPings {
         public static GameObject genericRadialMenuPrefab {get; private set;}
 
         internal static void Setup() {
-            ProceduralRadialMenu.buttonPrefab = Resources.Load<GameObject>("@RadialPings:Assets/RadialPings/ProceduralRadialButton.prefab");
-            genericRadialMenuPrefab = Resources.Load<GameObject>("@RadialPings:Assets/RadialPings/ProceduralRadialMenu.prefab");
+            ProceduralRadialMenu.buttonPrefab = RadialPingsPlugin.resources.LoadAsset<GameObject>("Assets/RadialPings/ProceduralRadialButton.prefab");
+            genericRadialMenuPrefab = RadialPingsPlugin.resources.LoadAsset<GameObject>("Assets/RadialPings/ProceduralRadialMenu.prefab");
             
             genericRadialMenuPrefab.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
 
@@ -16,8 +17,8 @@ namespace ThinkInvisible.RadialPings {
             menuCtrl.inOutAnimSpeed = 0.2f;
             menuCtrl.extraOutroScale = 1.25f;
             
-            var tmpfont = Resources.Load<TMP_FontAsset>("tmpfonts/misc/tmpsquaresboldhud");
-            var tmpmtl = Resources.Load<Material>("tmpfonts/misc/tmpsquaresboldhud");
+            var tmpfont = LegacyResourcesAPI.Load<TMP_FontAsset>("tmpfonts/misc/tmpsquaresboldhud");
+            var tmpmtl = LegacyResourcesAPI.Load<Material>("tmpfonts/misc/tmpsquaresboldhud");
 
 			var newText = genericRadialMenuPrefab.transform.Find("DisplayContainer").Find("Caption").gameObject.AddComponent<TextMeshPro>();
             newText.alignment = TextAlignmentOptions.Center;

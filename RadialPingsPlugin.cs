@@ -12,7 +12,7 @@ using UnityEngine.Networking;
 namespace ThinkInvisible.RadialPings {
     [BepInDependency(R2API.R2API.PluginGUID, R2API.R2API.PluginVersion)]
     [BepInPlugin(ModGuid, ModName, ModVer)]
-    [R2APISubmoduleDependency(nameof(ResourcesAPI), nameof(R2API.Networking.NetworkingAPI), nameof(LanguageAPI))]
+    [R2APISubmoduleDependency(nameof(R2API.Networking.NetworkingAPI), nameof(LanguageAPI))]
     public class RadialPingsPlugin:BaseUnityPlugin {
         public const string ModVer =
 #if DEBUG
@@ -25,7 +25,7 @@ namespace ThinkInvisible.RadialPings {
         internal static BepInEx.Logging.ManualLogSource logger;
 
         internal static ConfigFile cfgFile;
-
+        internal static AssetBundle resources;
 
         //todo: configify this
         internal float mainMenuOpenDelay = 0.2f;
@@ -40,9 +40,7 @@ namespace ThinkInvisible.RadialPings {
             //todo: option to keep first ping preview as result
 
             using(var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("RadialPings.radialpings_assets")) {
-                var bundle = AssetBundle.LoadFromStream(stream);
-                var provider = new AssetBundleResourcesProvider("@RadialPings", bundle);
-                ResourcesAPI.AddProvider(provider);
+                resources = AssetBundle.LoadFromStream(stream);
             }
 
             using(var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("RadialPings.lang_en.json"))

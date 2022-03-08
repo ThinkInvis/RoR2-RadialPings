@@ -36,7 +36,7 @@ namespace ThinkInvisible.RadialPings {
             ///<summary>The string provider to use as the button's subcaption. Should emit information about e.g. the target object or the action to be performed.</summary>
             public ProceduralRadialButton.ContextStringProvider contextStringProvider = null;
             ///<summary>The sprite to use as the button's icon.</summary>
-            public Sprite sprite = Resources.Load<Sprite>("textures/miscicons/texWIPIcon");
+            public Sprite sprite = LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
             ///<summary>The tint color to apply to the button's icon sprite.</summary>
             public Color iconColor = Color.white;
             ///<summary>The tint color to apply to the button's hover fill overlay.</summary>

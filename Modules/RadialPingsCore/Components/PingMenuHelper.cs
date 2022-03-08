@@ -68,7 +68,7 @@ namespace ThinkInvisible.RadialPings {
 
             //normal setup
 			//var pingIndObj = GameObject.Instantiate(RadialPingsPlugin.customPingIndicatorPrefab);
-            var pingIndObj = GameObject.Instantiate(Resources.Load<GameObject>("prefabs/PingIndicator"));
+            var pingIndObj = GameObject.Instantiate(LegacyResourcesAPI.Load<GameObject>("prefabs/PingIndicator"));
             var pingInd = pingIndObj.GetComponent<PingIndicator>();
 			owner.pingerController.pingIndicator = pingInd;
 			owner.pingerController.pingIndicator.pingOwner = owner.pingerController.gameObject;

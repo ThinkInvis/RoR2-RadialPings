@@ -117,13 +117,13 @@ namespace ThinkInvisible.RadialPings {
             RespondNoPingType = new PingType("RADIALPINGS_CONTEXT_RESPOND_NO",
                 (PingData pingData, List<string> tokens) => {return RespondTryApply(pingData, tokens, ResponseType.No);},
                 (ref PingData pingData, int catalogIndex, List<string> formatInserts) => {return RespondModify(ref pingData, catalogIndex, formatInserts, ResponseType.No);});
-            RespondNoPingType.pingSkins.Add(new PingSkin(new Color(1f, 0.5f, 0.5f), Resources.Load<Sprite>("@RadialPings:Assets/RadialPings/RadialPingsXIcon.png"), 8f,
+            RespondNoPingType.pingSkins.Add(new PingSkin(new Color(1f, 0.5f, 0.5f), RadialPingsPlugin.resources.LoadAsset<Sprite>("Assets/RadialPings/RadialPingsXIcon.png"), 8f,
                 "RADIALPINGS_MESSAGE_RESPOND_NO", PingIndicator.PingType.Default));
             
             RespondYesPingType = new PingType("RADIALPINGS_CONTEXT_RESPOND_YES",
                 (PingData pingData, List<string> tokens) => {return RespondTryApply(pingData, tokens, ResponseType.Yes);},
                 (ref PingData pingData, int catalogIndex, List<string> formatInserts) => {return RespondModify(ref pingData, catalogIndex, formatInserts, ResponseType.Yes);});
-            RespondYesPingType.pingSkins.Add(new PingSkin(new Color(0.5f, 1f, 0.5f), Resources.Load<Sprite>("@RadialPings:Assets/RadialPings/RadialPingsOIcon.png"), 8f,
+            RespondYesPingType.pingSkins.Add(new PingSkin(new Color(0.5f, 1f, 0.5f), RadialPingsPlugin.resources.LoadAsset<Sprite>("Assets/RadialPings/RadialPingsOIcon.png"), 8f,
                 "RADIALPINGS_MESSAGE_RESPOND_YES", PingIndicator.PingType.Default));
 
             PingCatalog.getAdditionalEntries += (list) => {

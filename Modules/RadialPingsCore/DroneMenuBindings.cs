@@ -24,7 +24,7 @@ namespace ThinkInvisible.RadialPings {
                 buttonBindingInfos.Add(new BindingInfo {
                     iconColor = Color.HSVToRGB((float)i/buttonCount, 1f, 1f),
                     descriptionToken = $"Test Button {i+1}",
-                    sprite = Resources.Load<Sprite>("textures/miscicons/texWIPIcon")
+                    sprite = LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon")
                 });
 
             var menuObj = base.Instantiate(owner);
