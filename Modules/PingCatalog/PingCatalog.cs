@@ -110,7 +110,7 @@ namespace ThinkInvisible.RadialPings {
         public static int pingContextCount {get; private set;}
 
         public static PingType Get(int index) {
-            return HGArrayUtilities.GetSafe(pingTypes, index);
+            return HG.ArrayUtils.GetSafe(pingTypes, index);
         }
 
         internal static void Init() {

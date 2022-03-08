@@ -31,6 +31,9 @@
     <Reference Include="com.unity.multiplayer-hlapi.Runtime">
       <HintPath>lib\com.unity.multiplayer-hlapi.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="HGCSharpUtils">
+      <HintPath>lib\HGCSharpUtils.dll</HintPath>
+    </Reference>
     <Reference Include="LegacyResourcesAPI">
       <HintPath>lib\LegacyResourcesAPI.dll</HintPath>
     </Reference>
