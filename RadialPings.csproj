@@ -31,6 +31,9 @@
     <Reference Include="com.unity.multiplayer-hlapi.Runtime">
       <HintPath>lib\com.unity.multiplayer-hlapi.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="LegacyResourcesAPI">
+      <HintPath>lib\LegacyResourcesAPI.dll</HintPath>
+    </Reference>
     <Reference Include="MMHOOK_RoR2">
       <HintPath>lib\MMHOOK_RoR2.dll</HintPath>
     </Reference>
