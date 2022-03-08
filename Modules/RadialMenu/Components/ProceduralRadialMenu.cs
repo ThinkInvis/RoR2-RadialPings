@@ -68,6 +68,8 @@ namespace ThinkInvisible.RadialPings {
 			myRect = GetComponent<RectTransform>();
 			mainCaption = transform.Find("DisplayContainer").Find("Caption").GetComponent<TextMeshPro>();
 			contextCaption = transform.Find("DisplayContainer").Find("ContextCaption").GetComponent<TextMeshPro>();
+			mainCaption.fontSizeMax *= 10;
+			contextCaption.fontSizeMax *= 10;
 			inOutState = InOutState.Intro;
 			inOutTimer = 0f;
 			displayOnlyThetaOffsetDegr = inOutTwistAngleDegr;
