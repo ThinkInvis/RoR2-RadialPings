@@ -75,12 +75,19 @@ ON HOVER: Opens a second menu with one option for each player in your current ga
 
 - An Order Drones feature is planned.
 - Streamlined support for other mods to add additional options is planned.
+- Controller and keybind support may be upcoming.
 - Let's Go! options leave some cases (namely targeting allies) poorly handled.
 - Some other options may not be final.
 - Text in the UI is a little shakily positioned.
 - See the GitHub repo for more!
 
 ## Changelog
+
+**2.0.3**
+
+- Compatibility update for Risk of Rain 2 Expansion 1 (SotV).
+- Updated R2API dependency to 4.0.11.
+- Updated BepInEx dependency to 5.4.1902.
 
 **2.0.2**
 
