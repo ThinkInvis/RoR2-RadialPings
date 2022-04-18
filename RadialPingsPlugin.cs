@@ -16,11 +16,7 @@ namespace ThinkInvisible.RadialPings {
     [BepInPlugin(ModGuid, ModName, ModVer)]
     [R2APISubmoduleDependency(nameof(R2API.Networking.NetworkingAPI), nameof(LanguageAPI))]
     public class RadialPingsPlugin:BaseUnityPlugin {
-        public const string ModVer =
-#if DEBUG
-            "0." +
-#endif
-            "2.0.3";
+        public const string ModVer = "2.0.3";
         public const string ModName = "RadialPings";
         public const string ModGuid = "com.ThinkInvisible.RadialPings";
         
@@ -61,22 +57,6 @@ namespace ThinkInvisible.RadialPings {
             On.RoR2.Run.OnDestroy += On_Run_OnDestroy;
 
             R2API.Networking.NetworkingAPI.RegisterMessageType<PingMenuHelper.MsgCustomPing>();
-
-            #if DEBUG
-            On.RoR2.Networking.GameNetworkManager.OnClientConnect += (orig, self, conn) => {
-                if(!self.clientLoadedScene) {
-				    ClientScene.Ready(conn);
-				    if(self.autoCreatePlayer) ClientScene.AddPlayer(0);
-			    }
-			    self.clientRttFrame = 0f;
-			    self.filteredClientRttFixed = 0f;
-                self.ClientSetPlayers(conn);
-                RoR2.Networking.RttManager.OnConnectionDiscovered(conn);
-            };
-            On.RoR2.NetworkUser.UpdateUserName += (orig, self) => {
-                self.userName = $"DEBUG USER NetID:{self.netId}";
-            };
-            #endif
         }
 
         void Start() {
