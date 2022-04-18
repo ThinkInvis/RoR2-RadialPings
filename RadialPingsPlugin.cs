@@ -8,9 +8,11 @@ using Path = System.IO.Path;
 using RoR2;
 using System.IO;
 using UnityEngine.Networking;
+using TILER2;
 
 namespace ThinkInvisible.RadialPings {
     [BepInDependency(R2API.R2API.PluginGUID, R2API.R2API.PluginVersion)]
+    [BepInDependency(TILER2Plugin.ModGuid, TILER2Plugin.ModVer)]
     [BepInPlugin(ModGuid, ModName, ModVer)]
     [R2APISubmoduleDependency(nameof(R2API.Networking.NetworkingAPI), nameof(LanguageAPI))]
     public class RadialPingsPlugin:BaseUnityPlugin {
