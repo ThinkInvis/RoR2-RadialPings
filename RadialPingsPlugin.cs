@@ -13,6 +13,7 @@ namespace ThinkInvisible.RadialPings {
     [BepInDependency(R2API.R2API.PluginGUID, R2API.R2API.PluginVersion)]
     [BepInPlugin(ModGuid, ModName, ModVer)]
     [R2APISubmoduleDependency(nameof(R2API.Networking.NetworkingAPI), nameof(LanguageAPI))]
+    [BepInDependency("com.rune580.riskofoptions", BepInDependency.DependencyFlags.SoftDependency)]
     public class RadialPingsPlugin:BaseUnityPlugin {
         public const string ModVer =
 #if DEBUG
@@ -27,25 +28,30 @@ namespace ThinkInvisible.RadialPings {
         internal static ConfigFile cfgFile;
         internal static AssetBundle resources;
 
-        //todo: configify this
-        internal float mainMenuOpenDelay = 0.2f;
+        private static ConfigEntry<float> MainMenuOpenDelay { get; set; }
 
         public void Awake() {
             logger = Logger;
             cfgFile = new ConfigFile(Path.Combine(Paths.ConfigPath, ModGuid + ".cfg"), true);
 
-            mainMenuOpenDelay = cfgFile.Bind(new ConfigDefinition("Client","MainMenuOpenDelay"), 0.2f,
-                new ConfigDescription("Time between ping keydown and opening of the radial menu. Faster keyups will cause a quick ping (vanilla behavior).",
-                new AcceptableValueRange<float>(0f, float.MaxValue))).Value;
+            MainMenuOpenDelay = Config.Bind<float>("Client", "MainMenuOpenDelay", 0.2f, "Time between ping keydown and opening of the radial menu. Faster keyups will cause a quick ping (vanilla behavior).");
+
             //todo: option to keep first ping preview as result
 
-            using(var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("RadialPings.radialpings_assets")) {
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("RadialPings.radialpings_assets")) {
                 resources = AssetBundle.LoadFromStream(stream);
             }
 
             using(var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("RadialPings.lang_en.json"))
             using(var reader = new StreamReader(stream)) {
                 LanguageAPI.Add(reader.ReadToEnd());
+            }
+
+            if (RiskOfOptionsCompat.enabled)
+            {
+                RiskOfOptionsCompat.AddOptionStepSlider(MainMenuOpenDelay, 0.0f, 5.0f, 0.1f, "Radial Menu Open Delay");
+
+                RiskOfOptionsCompat.SetModDescription("Adds a Radial Ping menu.");
             }
 
             RadialMenu.Setup();
@@ -61,7 +67,7 @@ namespace ThinkInvisible.RadialPings {
             R2API.Networking.NetworkingAPI.RegisterMessageType<PingMenuHelper.MsgCustomPing>();
 
             #if DEBUG
-            On.RoR2.Networking.GameNetworkManager.OnClientConnect += (orig, self, conn) => {
+            On.RoR2.Networking.NetworkManagerSystem.OnClientConnect += (orig, self, conn) => {
                 if(!self.clientLoadedScene) {
 				    ClientScene.Ready(conn);
 				    if(self.autoCreatePlayer) ClientScene.AddPlayer(0);
@@ -98,7 +104,7 @@ namespace ThinkInvisible.RadialPings {
                 menuTracker.btnHoldActioned = false;
             }
 
-            if(menuTracker.btnHoldStopwatch > mainMenuOpenDelay && !menuTracker.latestMenu && !menuTracker.btnHoldActioned) {
+            if(menuTracker.btnHoldStopwatch > MainMenuOpenDelay.Value && !menuTracker.latestMenu && !menuTracker.btnHoldActioned) {
                 menuTracker.btnHoldActioned = true;
                 menuTracker.latestMenu = MainPingMenuBindings.instance.Instantiate(self);
             } else if(self.bodyInputs.ping.justReleased) {
