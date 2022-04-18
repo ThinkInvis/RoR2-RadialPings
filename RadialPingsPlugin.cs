@@ -25,16 +25,20 @@ namespace ThinkInvisible.RadialPings {
         internal static ConfigFile cfgFile;
         internal static AssetBundle resources;
 
-        //todo: configify this
-        internal float mainMenuOpenDelay = 0.2f;
+        public ClientConfig clientConfig;
+        public class ClientConfig : AutoConfigContainer {
+            [AutoConfig("Time between ping keydown and opening of the radial menu. Faster keyups will cause a quick ping (vanilla behavior).",
+                AutoConfigFlags.None, 0f, float.MaxValue)]
+            public float mainMenuOpenDelay { get; internal set; } = 0.2f;
+        }
 
         public void Awake() {
             logger = Logger;
             cfgFile = new ConfigFile(Path.Combine(Paths.ConfigPath, ModGuid + ".cfg"), true);
 
-            mainMenuOpenDelay = cfgFile.Bind(new ConfigDefinition("Client","MainMenuOpenDelay"), 0.2f,
-                new ConfigDescription("Time between ping keydown and opening of the radial menu. Faster keyups will cause a quick ping (vanilla behavior).",
-                new AcceptableValueRange<float>(0f, float.MaxValue))).Value;
+            clientConfig = new ClientConfig();
+            clientConfig.BindAll(cfgFile, "RadialPings", "Client");
+
             //todo: option to keep first ping preview as result
 
             using(var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("RadialPings.radialpings_assets")) {
@@ -80,7 +84,7 @@ namespace ThinkInvisible.RadialPings {
                 menuTracker.btnHoldActioned = false;
             }
 
-            if(menuTracker.btnHoldStopwatch > mainMenuOpenDelay && !menuTracker.latestMenu && !menuTracker.btnHoldActioned) {
+            if(menuTracker.btnHoldStopwatch > clientConfig.mainMenuOpenDelay && !menuTracker.latestMenu && !menuTracker.btnHoldActioned) {
                 menuTracker.btnHoldActioned = true;
                 menuTracker.latestMenu = MainPingMenuBindings.instance.Instantiate(self);
             } else if(self.bodyInputs.ping.justReleased) {
