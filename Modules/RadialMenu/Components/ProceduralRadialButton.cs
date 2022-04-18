@@ -143,7 +143,7 @@ namespace ThinkInvisible.RadialPings {
 			//todo: this size calculation works for fitting circles, but anything outside the circle can clip; need to find a way to adjust for an axis-aligned square
 		}
 
-		protected override void OnPopulateMesh(VertexHelper vh) {
+		public override void OnPopulateMesh(VertexHelper vh) {
 			vh.Clear();
 			
 			var offset = rectTransform.pivot;
@@ -183,7 +183,7 @@ namespace ThinkInvisible.RadialPings {
 			
 		}
 		
-		protected override void OnRectTransformDimensionsChange() {
+		public override void OnRectTransformDimensionsChange() {
 			base.OnRectTransformDimensionsChange();
 			SetVerticesDirty();
 			SetMaterialDirty();
