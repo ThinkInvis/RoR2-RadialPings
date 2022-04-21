@@ -16,7 +16,7 @@ namespace ThinkInvisible.RadialPings {
     [BepInPlugin(ModGuid, ModName, ModVer)]
     [R2APISubmoduleDependency(nameof(R2API.Networking.NetworkingAPI), nameof(LanguageAPI))]
     public class RadialPingsPlugin:BaseUnityPlugin {
-        public const string ModVer = "2.0.3";
+        public const string ModVer = "2.1.0";
         public const string ModName = "RadialPings";
         public const string ModGuid = "com.ThinkInvisible.RadialPings";
         

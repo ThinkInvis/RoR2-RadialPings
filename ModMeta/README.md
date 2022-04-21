@@ -83,6 +83,11 @@ ON HOVER: Opens a second menu with one option for each player in your current ga
 
 ## Changelog
 
+**2.1.0**
+
+- Quick ping delay time config now uses TILER2.AutoConfig and has Risk Of Options support.
+- Added TILER2 dependency (7.0.1).
+
 **2.0.3**
 
 - Compatibility update for Risk of Rain 2 Expansion 1 (SotV).
