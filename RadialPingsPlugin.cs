@@ -29,7 +29,7 @@ namespace ThinkInvisible.RadialPings {
         public class ClientConfig : AutoConfigContainer {
             [AutoConfig("Time between ping keydown and opening of the radial menu. Faster keyups will cause a quick ping (vanilla behavior).",
                 AutoConfigFlags.None, 0f, float.MaxValue)]
-            [AutoConfigRoOSlider("{0:N1} seconds", 0f, 10f)]
+            [AutoConfigRoOSlider("{0:N1} seconds", 0f, 5f)]
             public float mainMenuOpenDelay { get; internal set; } = 0.2f;
         }
 
